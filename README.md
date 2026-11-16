@@ -1,6 +1,6 @@
 # INVESTRA
 
-自分専用の投資判断ページ。ChatGPT・Claude・Gemini・Muse・Siri が定期的にそれぞれのおすすめ投資先を並べ、それを見比べて最終的な投資先を自分で決める。
+自分専用の投資判断ページ。Claude・Gemini・Muse・Siri が定期的にそれぞれのおすすめ投資先を並べ、それを見比べて最終的な投資先を自分で決める。
 
 ## 表示の仕方
 
@@ -16,7 +16,6 @@ GitHub Pages（Settings → Pages → main ブランチのルート）でも公�
 
 | ファイル | 書く人 |
 | --- | --- |
-| `data/chatgpt.json` | ChatGPT |
 | `data/claude.json` | Claude |
 | `data/gemini.json` | Gemini |
 | `data/muse.json` | Muse |
@@ -54,16 +53,13 @@ GitHub Pages（Settings → Pages → main ブランチのルート）でも公�
 
 1. **Claude**（クラウドセッション、8:47 JST）
    - `data/claude.json` を自分で調べて見直す。
-   - `data/news.md` に今週の市場ニュースを事実だけまとめる（Gemini・ChatGPT に参考として渡す）。
-   - 上の2つを push したあと、下の2つの GitHub Actions を起動する。
+   - `data/news.md` に今週の市場ニュースを事実だけまとめる（Gemini に参考として渡す）。
+   - 上の2つを push したあと、Gemini の GitHub Actions を起動する。
 2. **Gemini**：Actions「Update Gemini Recommendations」
    - `python3 scripts/update_picks.py gemini --context data/news.md`。キーは GitHub の Secrets `GEMINI_API_KEY`。
-3. **ChatGPT**：Actions「Update ChatGPT picks」
-   - OpenAI API（有料・前払い）。GitHub の Settings → Secrets and variables → Actions に `OPENAI_API_KEY` を登録すると動く。未登録の間は何もしない。
-   - （GitHub Models の無料枠は 2026-07-30 に終了したため使えない）
 
-Claude が起動しなかった週も、Gemini は 11:07、ChatGPT は 11:13 に自動で動く（その日すでに更新済みなら何もしない）。
-どちらも Actions タブから手動実行できる。結果はデフォルトブランチと `main` の両方に書き込む。
+Claude が起動しなかった週も、Gemini は 11:07 に自動で動く（その日すでに更新済みなら何もしない）。
+Actions タブから手動実行もできる。結果はデフォルトブランチと `main` の両方に書き込む。
 
 ## AIに渡す依頼文の例
 

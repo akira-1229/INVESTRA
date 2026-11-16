@@ -1,6 +1,5 @@
 // 各AIは data/<id>.json を更新するだけ。ここに並べる順番でカード表示される。
 const ADVISORS = [
-  { id: "chatgpt", label: "ChatGPT", color: "#19f0a8" },
   { id: "claude",  label: "Claude",  color: "#ff8a5c" },
   { id: "gemini",  label: "Gemini",  color: "#4da3ff" },
   { id: "muse",    label: "Muse",    color: "#c77dff" },

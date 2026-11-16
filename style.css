@@ -37,7 +37,7 @@ h1 { margin: 0; font-family: var(--disp); font-weight: 800; font-size: 1.35rem; 
 footer { color: var(--muted); font-family: var(--mono); font-size: .68rem; padding: 18px 16px; letter-spacing: .04em; }
 
 /* 4枚のAIカード */
-.board { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 12px; }
+.board { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
 .card { position: relative; background: var(--card); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
         border: 1px solid var(--line); display: flex; flex-direction: column;
         clip-path: polygon(0 0, calc(100% - 14px) 0, 100% 14px, 100% 100%, 14px 100%, 0 calc(100% - 14px));
@@ -118,7 +118,7 @@ td b { font-family: var(--mono); color: var(--accent); }
 .legend { display: flex; flex-wrap: wrap; gap: 12px; color: var(--muted); font-family: var(--mono); font-size: .66rem; margin-top: 8px; }
 .legend span { display: inline-flex; align-items: center; gap: 4px; }
 
-/* 5枚を常に一度に表示（幅に応じて詰める） */
+/* 4枚を常に一度に表示（幅に応じて詰める） */
 @media (max-width: 1250px) {
   .board { gap: 8px; }
   .card-head { padding: 10px 10px 6px; } .card-head h3 { font-size: .82rem; letter-spacing: .08em; }
@@ -128,10 +128,8 @@ td b { font-family: var(--mono); color: var(--accent); }
   .detail { padding-left: 36px; }
 }
 @media (max-width: 900px) {
-  /* 1段目に3枚、2段目に2枚（6分割グリッドで 2+2+2 / 3+3） */
-  .board { grid-template-columns: repeat(6, minmax(0, 1fr)); }
-  .board > .card { grid-column: span 2; }
-  .board > .card:nth-child(n+4) { grid-column: span 3; }
+  /* 2枚×2段 */
+  .board { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .lower { grid-template-columns: 1fr; }
 }
 @media (max-width: 640px) {

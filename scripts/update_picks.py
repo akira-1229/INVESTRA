@@ -3,12 +3,9 @@
 
 使い方:
   python3 scripts/update_picks.py gemini  [--context ニュース要約.txt] [--dry-run]
-  python3 scripts/update_picks.py chatgpt [--context ニュース要約.txt] [--dry-run]
 
 - gemini : Gemini API（無料枠）。キーは環境変数 GEMINI_API_KEY。Claude のクラウド環境では
            ネットワークのプロキシがキーを差し込むので未設定でよい。
-- chatgpt: OpenAI API（有料・前払い）。キーは環境変数 OPENAI_API_KEY（GitHub Actions では
-           Secrets の OPENAI_API_KEY）。
 """
 import argparse, datetime, json, os, sys, time, urllib.error, urllib.request
 from pathlib import Path
@@ -18,11 +15,6 @@ PROVIDERS = {
         "url": "https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
         "models": ["gemini-3.8-flash", "gemini-flash-latest", "gemini-flash-lite-latest"],  # 無料枠で使えるもの。混雑時は順に
         "key_env": "GEMINI_API_KEY",
-    },
-    "chatgpt": {
-        "url": "https://api.openai.com/v1/chat/completions",
-        "models": ["gpt-5-mini", "gpt-5", "gpt-4.1-mini", "gpt-4o-mini"],  # 使えないものは飛ばす
-        "key_env": "OPENAI_API_KEY",
     },
 }
 DATA = Path(__file__).resolve().parent.parent / "data"
