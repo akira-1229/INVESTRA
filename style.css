@@ -298,11 +298,10 @@ header { position: fixed; top: 0; left: 0; right: 0; z-index: 10; max-width: non
 header::after { left: max(16px, calc((100% - 1400px) / 2 + 16px)); }
 
 /* ===== 3つの区画（ランキング／コンセンサス／最終決定）を分ける ===== */
-/* 区切り線：画面の端から端まで、2px */
+/* 区切り線：画面の端から端まで、3pt、同じ濃さ */
 .zone + .zone { position: relative; margin-top: 28px; padding-top: 28px; }
-.zone + .zone::after { content: ""; position: absolute; top: 0; left: 50%; width: 100vw; height: 2px; transform: translateX(-50%);
-  background: linear-gradient(90deg, var(--accent) 0, var(--accent) 120px, rgba(120, 220, 230, .35) 220px, rgba(120, 220, 230, .35) 100%);
-  box-shadow: 0 0 8px rgba(0, 229, 230, .35); }
+.zone + .zone::after { content: ""; position: absolute; top: 0; left: 50%; width: 100vw; height: 3pt; transform: translateX(-50%);
+  background: var(--accent); box-shadow: 0 0 8px rgba(0, 229, 230, .45); }
 .zone-label { font-family: var(--disp); font-size: .8rem; letter-spacing: .16em; color: var(--accent); margin: 0 0 10px;
   text-shadow: 0 0 8px rgba(0, 229, 230, .5); }
 .zone-label small { color: var(--muted); font-family: var(--mono); font-weight: 400; font-size: .66rem; margin-left: 8px;
