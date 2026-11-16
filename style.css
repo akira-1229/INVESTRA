@@ -31,7 +31,6 @@ header { display: flex; align-items: center; gap: 12px; padding-top: 16px; paddi
          border-bottom: 1px solid var(--line); margin-bottom: 14px; position: relative; }
 header::after { content: ""; position: absolute; left: 16px; bottom: -1px; width: 140px; height: 1px;
                 background: var(--accent); box-shadow: var(--glow); }
-.logo { width: 36px; height: 36px; border-radius: 8px; box-shadow: 0 0 14px rgba(0, 229, 230, .35); }
 h1 { margin: 0; font-family: var(--disp); font-weight: 800; font-size: 1.35rem; letter-spacing: .28em;
      background: linear-gradient(180deg, #ffffff 0%, #b9c6cc 45%, #5f6e76 55%, #e6f2f4 100%);
      -webkit-background-clip: text; background-clip: text; color: transparent;
@@ -125,3 +124,44 @@ td b { font-family: var(--mono); color: var(--accent); }
   .lower { grid-template-columns: 1fr; }
   h1 { font-size: 1.15rem; }
 }
+
+/* ===== 左上ロゴ：アイコンを立体化して時計回りに回転 ===== */
+.logo3d { --s: 54px; width: var(--s); height: var(--s); perspective: 420px; flex: none; margin: 0 4px 0 8px;
+          filter: drop-shadow(0 0 6px rgba(0, 229, 230, .45)); }
+.obj { position: relative; width: 100%; height: 100%; transform-style: preserve-3d;
+       transform: rotateX(58deg) rotateZ(0deg); animation: spin 9s linear infinite; }
+@keyframes spin { to { transform: rotateX(58deg) rotateZ(360deg); } }
+@media (prefers-reduced-motion: reduce) { .obj { animation: none; transform: rotateX(58deg) rotateZ(45deg); } }
+
+/* 下に浮かぶ発光プレート */
+.plate { position: absolute; border: 1px solid var(--accent); box-shadow: 0 0 6px var(--accent), inset 0 0 6px rgba(0,229,230,.5);
+         background: rgba(0, 229, 230, .08); }
+.p1 { inset: 4%; transform: translateZ(0); }
+.p2 { inset: 10%; transform: translateZ(calc(var(--s) * .07)); }
+
+/* 直方体（--w: 一辺, --h: 高さ, --z: 浮かせる高さ） */
+.box { position: absolute; width: var(--w); height: var(--w); left: calc((100% - var(--w)) / 2); top: calc((100% - var(--w)) / 2);
+       transform-style: preserve-3d; transform: translateZ(var(--z)); }
+.box .f { position: absolute; backface-visibility: visible; }
+.box .top { inset: 0; transform: translateZ(var(--h)); }
+.box .s1 { left: 0; top: 100%; width: 100%; height: var(--h); transform-origin: top;    transform: rotateX(90deg); }
+.box .s2 { left: 0; bottom: 100%; width: 100%; height: var(--h); transform-origin: bottom; transform: rotateX(-90deg); }
+.box .s3 { top: 0; right: 100%; width: var(--h); height: 100%; transform-origin: right;  transform: rotateY(90deg); }
+.box .s4 { top: 0; left: 100%; width: var(--h); height: 100%; transform-origin: left;   transform: rotateY(-90deg); }
+
+/* 本体：金属フレームの箱 */
+.main { --w: 70%; --h: calc(var(--s) * .2); --z: calc(var(--s) * .1); }
+.main .top { background: linear-gradient(135deg, #f2f7f8 0%, #8a979e 30%, #2a333a 55%, #c7d2d6 85%, #ffffff 100%);
+             display: grid; place-items: center; }
+.main .well { width: 76%; height: 76%; background: #071016; border: 1px solid rgba(0, 229, 230, .7);
+              box-shadow: inset 0 0 8px rgba(0, 229, 230, .45); }
+.main .s1, .main .s2, .main .s3, .main .s4 {
+  background: linear-gradient(180deg, #2b3a44, #0b1217); border: 1px solid rgba(160, 200, 210, .35); }
+.main .s1 { background: linear-gradient(180deg, #3d5560, #0e171d); }
+.main .s4 { background: linear-gradient(180deg, #1c2830, #070b0e); }
+
+/* 中央の台座と目 */
+.core { --w: 46%; --h: calc(var(--s) * .07); --z: calc(var(--s) * .3); }
+.core .top { background: #0a1820; border: 1px solid rgba(0, 229, 230, .6); display: grid; place-items: center; }
+.core .top svg { width: 92%; height: 92%; filter: drop-shadow(0 0 2px #00e5e6); }
+.core .s1, .core .s2, .core .s3, .core .s4 { background: #0f2a33; border: 1px solid rgba(0, 229, 230, .5); }
