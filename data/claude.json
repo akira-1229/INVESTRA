@@ -4,6 +4,7 @@
   "picks": [
     {
       "name": "eMAXIS Slim 全世界株式（オール・カントリー）",
+      "short": "オルカン",
       "ticker": "オルカン",
       "type": "投資信託",
       "horizon": "長期（10年以上）",
@@ -13,6 +14,7 @@
     },
     {
       "name": "eMAXIS Slim 米国株式（S&P500）",
+      "short": "S&P500",
       "ticker": "S&P500",
       "type": "投資信託",
       "horizon": "長期（10年以上）",
@@ -22,6 +24,7 @@
     },
     {
       "name": "台湾積体電路製造（TSMC）",
+      "short": "TSMC",
       "ticker": "TSM",
       "type": "米国上場株（ADR）",
       "horizon": "中長期（3〜5年）",
@@ -31,6 +34,7 @@
     },
     {
       "name": "マイクロソフト",
+      "short": "マイクロソフト",
       "ticker": "MSFT",
       "type": "米国株",
       "horizon": "中長期（3〜5年）",
@@ -40,6 +44,7 @@
     },
     {
       "name": "三菱UFJフィナンシャル・グループ",
+      "short": "三菱UFJ",
       "ticker": "8306",
       "type": "日本株",
       "horizon": "中期（2〜3年）",
@@ -49,6 +54,7 @@
     },
     {
       "name": "純金上場信託（現物国内保管型）",
+      "short": "金ETF",
       "ticker": "1540",
       "type": "ETF（金）",
       "horizon": "長期（ヘッジ）",

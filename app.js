@@ -29,7 +29,7 @@ function rowHTML(p, i, votes, color) {
     <summary>
       <span class="no">${i + 1}</span>
       <span class="title">
-        <span class="name" title="${esc(p.name)}">${esc(p.name)}</span>
+        <span class="name" title="${esc(p.name)}">${esc(p.short || p.name)}</span>
         <span class="sub2">
           ${p.risk ? `<i class="risk ${esc(p.risk)}" title="リスク${esc(p.risk)}"></i>` : ""}
           ${p.ticker ? `<span class="ticker">${esc(p.ticker)}</span>` : ""}
@@ -40,7 +40,7 @@ function rowHTML(p, i, votes, color) {
       ${p.allocation != null ? `<span class="alloc"><b>${esc(p.allocation)}%</b>
         <div class="bar"><i style="width:${Math.min(100, Number(p.allocation) || 0)}%;background:${color};color:${color}"></i></div></span>` : "<span></span>"}
     </summary>
-    <div class="detail">${p.thesis ? `<p>${esc(p.thesis)}</p>` : ""}<div class="meta">${meta}</div></div>
+    <div class="detail">${p.short ? `<p class="full">${esc(p.name)}</p>` : ""}${p.thesis ? `<p>${esc(p.thesis)}</p>` : ""}<div class="meta">${meta}</div></div>
   </details></li>`;
 }
 

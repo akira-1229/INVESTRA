@@ -89,6 +89,7 @@ ol.rank { list-style: none; margin: 0; padding: 0 0 8px; }
 .bar i { display: block; height: 100%; box-shadow: 0 0 6px currentColor; }
 .detail { padding: 2px 12px 10px 42px; font-size: .7rem; color: #b8d3d8; }
 .detail p { margin: 0 0 4px; }
+.detail .full { font-weight: 600; color: #eafcfd; }
 .detail .meta { color: var(--muted); font-family: var(--mono); font-size: .66rem; }
 
 /* 下段パネル */
@@ -131,19 +132,27 @@ td b { font-family: var(--mono); color: var(--accent); }
   .lower { grid-template-columns: 1fr; }
 }
 @media (max-width: 640px) {
-  header, main { padding: 0 10px; } header { padding-top: 12px; padding-bottom: 10px; }
-  .card-head { flex-direction: column; gap: 0; } .card-head h3 { font-size: .75rem; }
-  .summary { display: none; }
-  .board { gap: 6px; }
-  .card-head { padding: 8px 8px 5px; }
-  .rank details > summary { grid-template-columns: 13px 1fr auto; gap: 4px; padding: 4px 6px; }
-  .no { width: 13px; height: 14px; font-size: .52rem; }
-  .sub2 .risk { display: none; }
-  .name { font-size: .58rem; line-height: 1.25; white-space: normal; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; word-break: break-all; }
-  .bar { display: none; } .sub2 { font-size: .52rem; } .alloc { width: 24px; } .alloc b { font-size: .58rem; }
-  .detail { padding: 0 6px 6px; font-size: .6rem; }
-  .empty { padding: 12px 6px; font-size: .65rem; }
-  h1 { font-size: 1.1rem; }
+  /* スマホ：1銘柄＝1行 */
+  header, main { padding: 0 8px; }
+  header { padding-top: 8px; padding-bottom: 8px; margin-bottom: 8px; gap: 8px; }
+  .logo3d { --s: 38px; margin-left: 4px; }
+  h1 { font-size: .95rem; letter-spacing: .2em; }
+  .refresh { padding: 4px 10px; font-size: .8rem; border-radius: 10px; } .refresh svg { width: 14px; height: 14px; }
+  .board { gap: 5px; }
+  .card-head { padding: 6px 6px 4px; gap: 4px; } .card-head h3 { font-size: .62rem; letter-spacing: .06em; }
+  .date { font-size: .5rem; }
+  .summary, .sub2, .bar { display: none; }
+  .rank details > summary { grid-template-columns: 12px 1fr auto; gap: 4px; padding: 3px 5px; }
+  .no { width: 12px; height: 12px; font-size: .48rem; }
+  .name { font-size: .58rem; line-height: 1.3; }
+  .alloc { width: auto; } .alloc b { font-size: .55rem; }
+  .detail { padding: 0 5px 5px; font-size: .56rem; }
+  .empty { padding: 8px 4px; font-size: .52rem; }
+  .lower { gap: 8px; margin-top: 8px; } .panel { padding: 8px 10px; }
+  .panel h2 { font-size: .62rem; margin-bottom: 4px; } .panel h2 small { font-size: .5rem; }
+  .panel .empty { padding: 4px 0; } .legend { font-size: .5rem; gap: 8px; margin-top: 4px; }
+  table { font-size: .58rem; } th { font-size: .5rem; } .chips span { font-size: .5rem; }
+  footer { padding: 10px 8px; font-size: .5rem; }
 }
 
 /* ===== 左上ロゴ：アイコンを立体化して時計回りに回転 ===== */

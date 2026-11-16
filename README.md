@@ -33,7 +33,8 @@ GitHub Pages（Settings → Pages → main ブランチのルート）でも公�
   "summary": "全体方針をひとこと",
   "picks": [
     {
-      "name": "銘柄名",
+      "name": "銘柄名（正式名）",
+      "short": "短い表示名（例: オルカン）",
       "ticker": "MSFT",
       "type": "米国株",
       "horizon": "中長期（3〜5年）",
@@ -45,7 +46,7 @@ GitHub Pages（Settings → Pages → main ブランチのルート）でも公�
 }
 ```
 
-- `name` 以外は省略可。
+- `name` 以外は省略可。`short` を書くとカードにはそちらが表示され、正式名はタップで開く詳細に出る。
 - `ticker` が同じ銘柄は「重なり」欄で集計されるので、できるだけ揃える（米国株はティッカー、日本株は証券コード）。
 - `decision.json` は `updatedAt` の代わりに `decidedAt`、`summary` の代わりに `memo` を使う。
 
