@@ -59,7 +59,8 @@ GitHub Pages（Settings → Pages → main ブランチのルート）でも公�
 2. **Gemini**：Actions「Update Gemini Recommendations」
    - `python3 scripts/update_picks.py gemini --context data/news.md`。キーは GitHub の Secrets `GEMINI_API_KEY`。
 3. **ChatGPT**：Actions「Update ChatGPT picks」
-   - GitHub Models（無料枠）の OpenAI GPT。キーは Actions の `GITHUB_TOKEN` なので設定不要。
+   - OpenAI API（有料・前払い）。GitHub の Settings → Secrets and variables → Actions に `OPENAI_API_KEY` を登録すると動く。未登録の間は何もしない。
+   - （GitHub Models の無料枠は 2026-07-30 に終了したため使えない）
 
 Claude が起動しなかった週も、Gemini は 11:07、ChatGPT は 11:13 に自動で動く（その日すでに更新済みなら何もしない）。
 どちらも Actions タブから手動実行できる。結果はデフォルトブランチと `main` の両方に書き込む。

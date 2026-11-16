@@ -7,8 +7,8 @@
 
 - gemini : Gemini API（無料枠）。キーは環境変数 GEMINI_API_KEY。Claude のクラウド環境では
            ネットワークのプロキシがキーを差し込むので未設定でよい。
-- chatgpt: GitHub Models 経由の OpenAI GPT（無料枠）。GitHub Actions では GITHUB_TOKEN を
-           GITHUB_TOKEN 環境変数で渡す（workflow に permissions: models: read が必要）。
+- chatgpt: OpenAI API（有料・前払い）。キーは環境変数 OPENAI_API_KEY（GitHub Actions では
+           Secrets の OPENAI_API_KEY）。
 """
 import argparse, datetime, json, os, sys, time, urllib.error, urllib.request
 from pathlib import Path
@@ -20,11 +20,9 @@ PROVIDERS = {
         "key_env": "GEMINI_API_KEY",
     },
     "chatgpt": {
-        "url": "https://models.github.ai/inference/chat/completions",
-        "fallback_urls": ["https://models.inference.ai.azure.com/chat/completions"],
-        "headers": {"Accept": "application/vnd.github+json", "X-GitHub-Api-Version": "2022-11-28"},
-        "models": ["openai/gpt-5", "openai/gpt-5-mini", "openai/gpt-4.1", "openai/gpt-4o"],  # 使えないものは飛ばす
-        "key_env": "GITHUB_TOKEN",
+        "url": "https://api.openai.com/v1/chat/completions",
+        "models": ["gpt-5-mini", "gpt-5", "gpt-4.1-mini", "gpt-4o-mini"],  # 使えないものは飛ばす
+        "key_env": "OPENAI_API_KEY",
     },
 }
 DATA = Path(__file__).resolve().parent.parent / "data"
