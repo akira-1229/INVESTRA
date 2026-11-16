@@ -159,12 +159,14 @@ td b { font-family: var(--mono); color: var(--accent); }
 }
 
 /* ===== 左上ロゴ：アイコンを立体化して時計回りに回転 ===== */
-.logo3d { --s: 54px; width: var(--s); height: var(--s); perspective: 420px; flex: none; margin: 0 4px 0 8px;
-          filter: drop-shadow(0 0 6px rgba(0, 229, 230, .45)); }
-.obj { position: relative; width: 100%; height: 100%; transform-style: preserve-3d;
-       transform: rotateX(58deg) rotateZ(0deg); animation: spin 9s linear infinite; }
-@keyframes spin { to { transform: rotateX(58deg) rotateZ(360deg); } }
-@media (prefers-reduced-motion: reduce) { .obj { animation: none; transform: rotateX(58deg) rotateZ(45deg); } }
+.logo3d { --s: 54px; width: var(--s); height: var(--s); flex: none; margin: 0 4px 0 8px;
+          -webkit-perspective: 420px; perspective: 420px; }
+.obj { position: relative; width: 100%; height: 100%;
+       -webkit-transform-style: preserve-3d; transform-style: preserve-3d;
+       transform: rotateX(58deg) rotateZ(0deg); will-change: transform;
+       -webkit-animation: spin 9s linear infinite; animation: spin 9s linear infinite; }
+@-webkit-keyframes spin { from { transform: rotateX(58deg) rotateZ(0deg); } to { transform: rotateX(58deg) rotateZ(360deg); } }
+@keyframes spin { from { transform: rotateX(58deg) rotateZ(0deg); } to { transform: rotateX(58deg) rotateZ(360deg); } }
 
 /* 下に浮かぶ発光プレート */
 .plate { position: absolute; border: 1px solid var(--accent); box-shadow: 0 0 6px var(--accent), inset 0 0 6px rgba(0,229,230,.5);
@@ -174,7 +176,7 @@ td b { font-family: var(--mono); color: var(--accent); }
 
 /* 直方体（--w: 一辺, --h: 高さ, --z: 浮かせる高さ） */
 .box { position: absolute; width: var(--w); height: var(--w); left: calc((100% - var(--w)) / 2); top: calc((100% - var(--w)) / 2);
-       transform-style: preserve-3d; transform: translateZ(var(--z)); }
+       -webkit-transform-style: preserve-3d; transform-style: preserve-3d; transform: translateZ(var(--z)); }
 .box .f { position: absolute; backface-visibility: visible; }
 .box .top { inset: 0; transform: translateZ(var(--h)); }
 .box .s1 { left: 0; top: 100%; width: 100%; height: var(--h); transform-origin: top;    transform: rotateX(90deg); }
@@ -196,7 +198,7 @@ td b { font-family: var(--mono); color: var(--accent); }
 /* 中央の台座と目 */
 .core { --w: 46%; --h: calc(var(--s) * .07); --z: calc(var(--s) * .3); }
 .core .top { background: #0a1820; border: 1px solid rgba(0, 229, 230, .6); display: grid; place-items: center; }
-.core .top svg { width: 92%; height: 92%; filter: drop-shadow(0 0 2px #00e5e6); }
+.core .top svg { width: 92%; height: 92%; }
 .core .s1, .core .s2, .core .s3, .core .s4 { background: #0f2a33; border: 1px solid rgba(0, 229, 230, .5); }
 
 /* ===== 右上の更新ボタン ===== */
