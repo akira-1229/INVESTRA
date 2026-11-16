@@ -1,6 +1,6 @@
 // 各AIは data/<id>.json を更新するだけ。ここに並べる順番でカード表示される。
 const ADVISORS = [
-  { id: "claude",  label: "Claude",  color: "#ff8a5c", icon: "icons/claude.png" },
+  { id: "claude",  label: "Claude",  color: "#ffa983", icon: "icons/claude.png" },
   // Gemini は虹色。color は光り方などに使う代表色、fill がゲージや文字に使う虹のグラデーション
   { id: "gemini",  label: "Gemini",  color: "#a9a6d8", icon: "icons/gemini.png",
     fill: "linear-gradient(90deg, #e8919f, #e9b48a, #e3d38f, #9dcfa9, #8ebfdf, #a3a6e3, #c9a3dc)" },
