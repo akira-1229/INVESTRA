@@ -1,5 +1,69 @@
 {
-  "decidedAt": null,
-  "memo": "",
-  "picks": []
+  "decidedAt": "2026-11-16",
+  "memo": "4者（Claude・Gemini・Muse・Siri）の統合。全員一致のオルカンを核に、3者が推すS&P500と金を採用。日本株は4者全員が持つため共通項のTOPIXに一本化し、守りは3者の債券枠を円建ての個人向け国債に集約した。AI個別株は2者の主張をNVDAとTSMに半分ずつ割り、高リスク枠は合計1割に抑制。インド株・高配当株・個別銀行株などの単独推しは今回見送り。",
+  "picks": [
+    {
+      "name": "eMAXIS Slim 全世界株式（オール・カントリー）",
+      "ticker": "オルカン",
+      "type": "投資信託",
+      "horizon": "長期（10年以上）",
+      "risk": "中",
+      "allocation": 40,
+      "thesis": "4者全員が最大比率で推す土台（40〜45%）。低コストで世界の株式全体に分散でき、つみたての中心に置く。"
+    },
+    {
+      "name": "eMAXIS Slim 米国株式（S&P500）",
+      "ticker": "S&P500",
+      "type": "投資信託",
+      "horizon": "長期（10年以上）",
+      "risk": "中",
+      "allocation": 15,
+      "thesis": "Claude・Gemini・Siriの3者が保有（15〜25%）。米国大型株への上乗せ枠として、4者平均にあたる15%を採用。"
+    },
+    {
+      "name": "NEXT FUNDS TOPIX連動型上場投信",
+      "ticker": "1306",
+      "type": "ETF",
+      "horizon": "中長期（3〜5年）",
+      "risk": "中",
+      "allocation": 10,
+      "thesis": "日本株枠は4者全員にあるが銘柄が割れたため、共通項であるTOPIX全体に一本化。ガバナンス改革と自社株買いの恩恵を広く受ける。"
+    },
+    {
+      "name": "純金上場信託（現物国内保管型）",
+      "ticker": "1540",
+      "type": "ETF（金）",
+      "horizon": "長期（ヘッジ）",
+      "risk": "中",
+      "allocation": 10,
+      "thesis": "Claude・Muse・Siriの3者がそろって10%を配分。株式と連動しにくい守りの資産として、国内保管型の1540に統一。"
+    },
+    {
+      "name": "個人向け国債（変動10年）",
+      "ticker": "",
+      "type": "国債",
+      "horizon": "長期（守り）",
+      "risk": "低",
+      "allocation": 15,
+      "thesis": "債券の守り枠は3者にある（AGG・TLT・個人国債）。円建てで元本保証、金利上昇局面で利率が上がる変動10年に集約し、暴落時の買い増し資金置き場にする。"
+    },
+    {
+      "name": "エヌビディア",
+      "ticker": "NVDA",
+      "type": "米国株",
+      "horizon": "中長期（3〜5年）",
+      "risk": "高",
+      "allocation": 5,
+      "thesis": "AI個別株はClaudeとMuseの2者が主張。需要の中心であるNVDAに半分の5%。バリュエーションが高いため小さく持つ。"
+    },
+    {
+      "name": "台湾積体電路製造（TSMC）",
+      "ticker": "TSM",
+      "type": "米国上場株（ADR）",
+      "horizon": "中長期（3〜5年）",
+      "risk": "高",
+      "allocation": 5,
+      "thesis": "Claudeが推すAI半導体の「つるはし」銘柄。NVDAと半分ずつにし、個別株リスクを1銘柄に寄せない。"
+    }
+  ]
 }
