@@ -1,0 +1,57 @@
+# Gemini API（GitHub の Secrets に保存した GEMINI_API_KEY）におすすめを聞いて data/gemini.json を更新する。
+# 毎週土曜の朝、Claude が今週のニュース要約（data/news.md）を置いたあとこのワークフローを起動する。
+# 起動されなかった週のために、土曜 11:07 JST にも自動で動く（その日すでに更新済みなら何もしない）。
+name: Update Gemini Recommendations
+
+on:
+  workflow_dispatch: # GitHub画面から手動でも実行できる
+  schedule:
+    - cron: "7 2 * * 6"   # 土曜 02:07 UTC = 11:07 JST
+
+permissions:
+  contents: write
+
+concurrency:
+  group: update-picks
+  cancel-in-progress: false
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Skip if already updated today (JST)
+        id: check
+        run: |
+          today=$(TZ=Asia/Tokyo date +%F)
+          updated=$(python3 -c "import json;print(json.load(open('data/gemini.json')).get('updatedAt') or '')")
+          if [ "$updated" = "$today" ] && [ "${{ github.event_name }}" = "schedule" ]; then
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Ask Gemini
+        if: steps.check.outputs.skip != 'true'
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+        run: python3 scripts/update_picks.py gemini --context data/news.md
+
+      - name: Commit and push (default branch and main)
+        if: steps.check.outputs.skip != 'true'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/gemini.json
+          if git diff --cached --quiet; then echo "No changes to commit"; exit 0; fi
+          git commit -m "chore: update gemini recommendations ($(TZ=Asia/Tokyo date +%F))"
+          branch="${GITHUB_REF_NAME}"
+          for i in 1 2 3; do
+            git push origin "HEAD:${branch}" && break
+            git pull --rebase origin "${branch}"
+          done
+          git push origin HEAD:main || echo "main is out of sync; Claude will sync it on the next run"
