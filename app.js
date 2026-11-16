@@ -21,21 +21,25 @@ async function load(path) {
 const ranked = (picks = []) =>
   picks.map((p, i) => ({ p, i })).sort((a, b) => (b.p.allocation ?? -1) - (a.p.allocation ?? -1) || a.i - b.i).map((x) => x.p);
 
-function compactRowHTML(p, i, votes, color) {
+// ゲージの長さ：そのリストで一番大きい配分を100%として比べる（差が見えやすいように）
+const gaugeWidth = (p, max) => max > 0 ? Math.max(4, Math.round((Number(p.allocation) || 0) / max * 100)) : 0;
+const maxAlloc = (picks) => Math.max(0, ...picks.map((p) => Number(p.allocation) || 0));
+const riskDot = (p) => p.risk ? `<i class="risk ${esc(p.risk)}" title="リスク${esc(p.risk)}"></i>` : "";
+
+function compactRowHTML(p, i, votes, color, max = 100) {
   const n = votes?.get(keyOf(p))?.size ?? 0;
   return `<li><div class="row">
     <span class="no">${i + 1}</span>
     <span class="title">
-      <span class="name" title="${esc(p.name)}">${esc(p.short || p.name)}</span>
+      <span class="name" title="${esc(p.name)}">${riskDot(p)}${esc(p.short || p.name)}</span>
       <span class="sub2">
-        ${p.risk ? `<i class="risk ${esc(p.risk)}" title="リスク${esc(p.risk)}"></i>` : ""}
         ${p.ticker ? `<span class="ticker">${esc(p.ticker)}</span>` : ""}
         ${p.type ? `<span>${esc(p.type)}</span>` : ""}
         ${n >= 2 ? `<span class="match" title="${n}つのAIが推奨">×${n}</span>` : ""}
       </span>
     </span>
-    ${p.allocation != null ? `<span class="alloc"><b>${esc(p.allocation)}%</b>
-      <div class="bar"><i style="width:${Math.min(100, Number(p.allocation) || 0)}%;background:${color};color:${color}"></i></div></span>` : "<span></span>"}
+    ${p.allocation != null ? `<span class="alloc"><b>${esc(p.allocation)}<small>%</small></b></span>
+      <span class="gauge"><i style="width:${gaugeWidth(p, max)}%;background:${color};color:${color}"></i></span>` : "<span></span>"}
   </div></li>`;
 }
 
@@ -46,7 +50,7 @@ function advisorCard(a, data, votes, idx) {
     <div class="card-head"><h3>${esc(a.label)}</h3>
       <span class="date">${data?.updatedAt ? esc(data.updatedAt) : "未更新"}</span></div>
     ${data?.summary ? `<p class="summary">${esc(data.summary)}</p>` : ""}
-    ${picks.length ? `<ol class="rank">${picks.map((p, i) => compactRowHTML(p, i, votes, a.color)).join("")}</ol>`
+    ${picks.length ? `<ol class="rank">${picks.map((p, i) => compactRowHTML(p, i, votes, a.color, maxAlloc(picks))).join("")}</ol>`
                    : `<p class="empty">まだ登録されていません</p>`}
   </article>`;
 }
@@ -62,7 +66,7 @@ function zoomHTML(a, data, votes) {
     <ol class="zrank">${picks.map((p, i) => {
       const n = votes?.get(keyOf(p))?.size ?? 0;
       const tags = [p.type, p.horizon].filter(Boolean).map((t) => `<span class="tag">${esc(t)}</span>`).join("");
-      const alloc = Math.min(100, Number(p.allocation) || 0);
+      const alloc = gaugeWidth(p, maxAlloc(picks));
       return `<li>
         <div class="ztop">
           <span class="no">${i + 1}</span>
@@ -150,7 +154,7 @@ function consensusHTML({ votes, names }) {
   const rows = [...votes].filter(([, s]) => s.size >= 2).sort((x, y) => y[1].size - x[1].size);
   if (!rows.length) return `<p class="empty">まだ重なっている銘柄はありません</p>`;
   return `<table><tr><th>銘柄</th><th>推したAI</th><th>数</th></tr>
-    ${rows.map(([k, s]) => `<tr><td>${esc(names.get(k).name)} <span class="ticker">${esc(names.get(k).ticker)}</span></td>
+    ${rows.map(([k, s]) => `<tr><td>${riskDot(names.get(k))}${esc(names.get(k).short || names.get(k).name)} <span class="ticker">${esc(names.get(k).ticker)}</span></td>
       <td class="chips">${[...s].map((a) => `<span style="--c:${a.color}">${esc(a.label)}</span>`).join("")}</td>
       <td><b>${s.size}</b>/${ADVISORS.length}</td></tr>`).join("")}</table>`;
 }
@@ -158,7 +162,7 @@ function consensusHTML({ votes, names }) {
 function decisionHTML(d, votes) {
   if (!d?.picks?.length) return `<p class="empty">${mode === "stocks" ? "個別株の最終判断はまだありません" : "まだ決定していません"}</p>`;
   return `${d.decidedAt ? `<div class="date">決定日: ${esc(d.decidedAt)}</div>` : ""}
-    <ol class="rank">${ranked(d.picks).map((p, i) => compactRowHTML(p, i, votes, "#00e5e6")).join("")}</ol>
+    <ol class="rank">${ranked(d.picks).map((p, i) => compactRowHTML(p, i, votes, "#00e5e6", maxAlloc(d.picks))).join("")}</ol>
     ${d.memo ? `<p class="memo">${esc(d.memo)}</p>` : ""}
     <p class="tap-hint">パネルをタップすると拡大表示します</p>`;
 }
@@ -191,7 +195,6 @@ function setMode(m) {
   mode = m;
   try { localStorage.setItem("investra-mode", m); } catch {}
   document.querySelectorAll(".seg button").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.mode === m)));
-  document.getElementById("consensus-sub").textContent = m === "stocks" ? "複数のAIが推した個別株" : "複数のAIが推した銘柄（全体）";
 }
 document.querySelectorAll(".seg button").forEach((b) => b.onclick = () => { setMode(b.dataset.mode); paint(); });
 

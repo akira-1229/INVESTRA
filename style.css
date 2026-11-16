@@ -361,3 +361,23 @@ header { -webkit-transform: translateZ(0); transform: translateZ(0); will-change
   .zone-head { margin-bottom: 6px; }
   .seg button { padding: 3px 10px; font-size: .62rem; }
 }
+
+/* ===== 配分％を大きく＋％に応じたゲージ（一番大きい配分を満タンとして比較） ===== */
+.rank .row { grid-template-columns: 20px 1fr auto; row-gap: 3px; }
+.rank .row .alloc { width: auto; }
+.rank .row .alloc b { font-size: .9rem; font-weight: 700; color: var(--c, var(--accent)); text-shadow: 0 0 8px color-mix(in srgb, var(--c, var(--accent)) 55%, transparent); }
+.rank .row .alloc small { font-size: .6em; margin-left: 1px; opacity: .85; }
+.gauge { grid-column: 2 / -1; display: block; height: 5px; background: rgba(255, 255, 255, .07); border-radius: 3px; overflow: hidden; }
+.gauge i { display: block; height: 100%; border-radius: 3px; box-shadow: 0 0 8px currentColor; }
+.name .risk { margin-right: 5px; vertical-align: 1px; }
+td .risk { margin-right: 6px; vertical-align: 1px; }
+@media (max-width: 1250px) {
+  .rank .row { grid-template-columns: 20px 1fr auto; }
+}
+@media (max-width: 640px) {
+  .rank .row { grid-template-columns: 11px 1fr auto; row-gap: 2px; }
+  .rank .row .alloc b { font-size: .72rem; }
+  .gauge { height: 4px; }
+  .name .risk { width: 6px; height: 6px; margin-right: 3px; vertical-align: 0; }
+  .zalloc .bar { display: block; }
+}
