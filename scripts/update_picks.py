@@ -21,6 +21,8 @@ PROVIDERS = {
     },
     "chatgpt": {
         "url": "https://models.github.ai/inference/chat/completions",
+        "fallback_urls": ["https://models.inference.ai.azure.com/chat/completions"],
+        "headers": {"Accept": "application/vnd.github+json", "X-GitHub-Api-Version": "2022-11-28"},
         "models": ["openai/gpt-5", "openai/gpt-5-mini", "openai/gpt-4.1", "openai/gpt-4o"],  # 使えないものは飛ばす
         "key_env": "GITHUB_TOKEN",
     },
@@ -61,13 +63,13 @@ def build_prompt(today, previous, context):
     return "\n\n".join(p)
 
 
-def call(url, model, prompt, key):
+def call(url, model, prompt, key, extra_headers=None):
     payload = {"model": model, "messages": [{"role": "user", "content": prompt}],
                "response_format": {"type": "json_object"}}
     if "gpt-5" not in model:  # gpt-5 系は temperature 指定不可
         payload["temperature"] = 0.4
-    req = urllib.request.Request(url, json.dumps(payload).encode(),
-                                 {"Authorization": f"Bearer {key}", "Content-Type": "application/json"})
+    headers = {"Authorization": f"Bearer {key}", "Content-Type": "application/json", **(extra_headers or {})}
+    req = urllib.request.Request(url, json.dumps(payload).encode(), headers)
     with urllib.request.urlopen(req, timeout=180) as r:
         raw = r.read().decode("utf-8", "replace")
     try:
@@ -82,10 +84,13 @@ def call(url, model, prompt, key):
 def ask(cfg, prompt):
     key = os.environ.get(cfg["key_env"]) or "proxy-injected"
     last = None
-    for model in cfg["models"]:
+    targets = [(u, m) for u in [cfg["url"], *cfg.get("fallback_urls", [])] for m in cfg["models"]]
+    for url, model in targets:
+        if url != cfg["url"]:
+            model = model.split("/")[-1]  # 旧エンドポイントは "gpt-4o" のような名前
         for attempt in range(3):
             try:
-                return model, call(cfg["url"], model, prompt, key)
+                return model, call(url, model, prompt, key, cfg.get("headers"))
             except urllib.error.HTTPError as e:
                 last = f"{model}: HTTP {e.code} {e.read()[:300]!r}"
                 if e.code in (429, 500, 503):
