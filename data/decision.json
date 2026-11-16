@@ -65,5 +65,65 @@
       "allocation": 5,
       "thesis": "Claudeが推すAI半導体の「つるはし」銘柄。NVDAと半分ずつにし、個別株リスクを1銘柄に寄せない。"
     }
+  ],
+  "stocksDecidedAt": "2026-11-16",
+  "stocksMemo": "4者の個別株ランキングの統合。全員（4者）が推したマイクロソフトを最大配分とし、3者の三菱UFJとソニー、2者のApple・NVDA・伊藤忠で構成した。単独推し（TSM、三菱商事、信越化学、トヨタ、バークシャーなど）は見送り。高リスクはNVDAのみで15%に抑えた。",
+  "stocksPicks": [
+    {
+      "name": "マイクロソフト",
+      "ticker": "MSFT",
+      "type": "米国株",
+      "horizon": "中長期（3〜5年）",
+      "risk": "中",
+      "allocation": 25,
+      "thesis": "4者全員が推した唯一の銘柄（20〜25%）。クラウドとAI収益化の基盤が厚く、個別株枠の中心に置く。"
+    },
+    {
+      "name": "三菱UFJフィナンシャル・グループ",
+      "short": "三菱UFJ",
+      "ticker": "8306",
+      "type": "日本株",
+      "horizon": "中期（2〜3年）",
+      "risk": "中",
+      "allocation": 15,
+      "thesis": "Claude・Muse・Siriの3者がそろって15%。金利正常化の恩恵と株主還元が根拠。"
+    },
+    {
+      "name": "ソニーグループ",
+      "ticker": "6758",
+      "type": "日本株",
+      "horizon": "中長期（3〜5年）",
+      "risk": "中",
+      "allocation": 15,
+      "thesis": "Claude・Muse・Siriの3者が推奨（10〜20%）。エンタメとイメージセンサーの複合成長を買う。"
+    },
+    {
+      "name": "Apple Inc.",
+      "short": "アップル",
+      "ticker": "AAPL",
+      "type": "米国株",
+      "horizon": "中長期（3〜5年）",
+      "risk": "中",
+      "allocation": 15,
+      "thesis": "GeminiとSiriの2者が推奨（15〜25%）。強固なエコシステムと高いキャッシュ創出力。"
+    },
+    {
+      "name": "エヌビディア",
+      "ticker": "NVDA",
+      "type": "米国株",
+      "horizon": "中長期（3〜5年）",
+      "risk": "高",
+      "allocation": 15,
+      "thesis": "GeminiとMuseの2者が推奨（10〜25%）。AI需要の中心だが値動きが荒いため、2者の中間あたりの15%に抑えた。"
+    },
+    {
+      "name": "伊藤忠商事",
+      "ticker": "8001",
+      "type": "日本株",
+      "horizon": "中長期（3〜5年）",
+      "risk": "中",
+      "allocation": 15,
+      "thesis": "ClaudeとMuseの2者がそろって15%。非資源比率が高く収益が安定した商社。"
+    }
   ]
 }
