@@ -426,3 +426,7 @@ ol.rank { padding: 6px 8px 8px; display: flex; flex-direction: column; gap: 5px;
 /* ニュースの警告マーク：塗りつぶした黄色の三角に黒い「!」 */
 .alertline .warn { width: 1.15em; height: 1.05em; align-self: center; text-shadow: none; filter: drop-shadow(0 0 4px rgba(255, 214, 10, .7)); }
 .zrank .alertline .warn { width: 1.1em; height: 1em; }
+
+/* 上部バーの下線：左端から右端まで（区切り線と同じ 2pt） */
+header { border-bottom: 0; }
+header::after { left: 0 !important; right: 0; width: auto; height: 2pt; bottom: 0; background: var(--accent); box-shadow: 0 0 8px rgba(0, 229, 230, .45); }
