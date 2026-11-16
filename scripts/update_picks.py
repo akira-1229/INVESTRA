@@ -1,18 +1,31 @@
 #!/usr/bin/env python3
-"""Gemini API におすすめ投資先を聞いて data/gemini.json を更新する。
+"""AI におすすめ投資先を聞いて data/<provider>.json を更新する。
 
 使い方:
-  python3 scripts/update_gemini.py [--context ニュース要約.txt] [--dry-run]
+  python3 scripts/update_picks.py gemini  [--context ニュース要約.txt] [--dry-run]
+  python3 scripts/update_picks.py chatgpt [--context ニュース要約.txt] [--dry-run]
 
-APIキーは環境変数 GEMINI_API_KEY から読む。クラウド環境ではネットワークの
-プロキシがキーを差し込むので、未設定なら仮の値で送る（中身は置き換えられる）。
+- gemini : Gemini API（無料枠）。キーは環境変数 GEMINI_API_KEY。Claude のクラウド環境では
+           ネットワークのプロキシがキーを差し込むので未設定でよい。
+- chatgpt: GitHub Models 経由の OpenAI GPT（無料枠）。GitHub Actions では GITHUB_TOKEN を
+           GITHUB_TOKEN 環境変数で渡す（workflow に permissions: models: read が必要）。
 """
 import argparse, datetime, json, os, sys, time, urllib.error, urllib.request
 from pathlib import Path
 
-URL = "https://generativelanguage.googleapis.com/v1beta/openai/chat/completions"
-MODELS = ["gemini-3.8-flash", "gemini-flash-latest", "gemini-flash-lite-latest"]  # 無料枠で使えるもの。混雑時は順に切り替え
-OUT = Path(__file__).resolve().parent.parent / "data" / "gemini.json"
+PROVIDERS = {
+    "gemini": {
+        "url": "https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
+        "models": ["gemini-3.8-flash", "gemini-flash-latest", "gemini-flash-lite-latest"],  # 無料枠で使えるもの。混雑時は順に
+        "key_env": "GEMINI_API_KEY",
+    },
+    "chatgpt": {
+        "url": "https://models.github.ai/inference/chat/completions",
+        "models": ["openai/gpt-5", "openai/gpt-5-mini", "openai/gpt-4.1", "openai/gpt-4o"],  # 使えないものは飛ばす
+        "key_env": "GITHUB_TOKEN",
+    },
+}
+DATA = Path(__file__).resolve().parent.parent / "data"
 JST = datetime.timezone(datetime.timedelta(hours=9))
 
 SCHEMA = """{
@@ -48,25 +61,24 @@ def build_prompt(today, previous, context):
     return "\n\n".join(p)
 
 
-def call(model, prompt, key):
-    body = json.dumps({
-        "model": model,
-        "messages": [{"role": "user", "content": prompt}],
-        "response_format": {"type": "json_object"},
-        "temperature": 0.4,
-    }).encode()
-    req = urllib.request.Request(URL, body, {"Authorization": f"Bearer {key}", "Content-Type": "application/json"})
+def call(url, model, prompt, key):
+    payload = {"model": model, "messages": [{"role": "user", "content": prompt}],
+               "response_format": {"type": "json_object"}}
+    if "gpt-5" not in model:  # gpt-5 系は temperature 指定不可
+        payload["temperature"] = 0.4
+    req = urllib.request.Request(url, json.dumps(payload).encode(),
+                                 {"Authorization": f"Bearer {key}", "Content-Type": "application/json"})
     with urllib.request.urlopen(req, timeout=180) as r:
         return json.load(r)["choices"][0]["message"]["content"]
 
 
-def ask(prompt):
-    key = os.environ.get("GEMINI_API_KEY", "proxy-injected")
+def ask(cfg, prompt):
+    key = os.environ.get(cfg["key_env"]) or "proxy-injected"
     last = None
-    for model in MODELS:
+    for model in cfg["models"]:
         for attempt in range(3):
             try:
-                return model, call(model, prompt, key)
+                return model, call(cfg["url"], model, prompt, key)
             except urllib.error.HTTPError as e:
                 last = f"{model}: HTTP {e.code} {e.read()[:300]!r}"
                 if e.code in (429, 500, 503):
@@ -75,7 +87,7 @@ def ask(prompt):
             except (urllib.error.URLError, TimeoutError) as e:
                 last = f"{model}: {e}"; break  # 時間切れは次のモデルへ
         print("fallback:", last, file=sys.stderr)
-    sys.exit(f"Gemini API の呼び出しに失敗しました: {last}")
+    sys.exit(f"API の呼び出しに失敗しました: {last}")
 
 
 def parse(text):
@@ -106,20 +118,22 @@ def parse(text):
 
 def main():
     ap = argparse.ArgumentParser()
+    ap.add_argument("provider", choices=PROVIDERS)
     ap.add_argument("--context", help="今週の市場ニュース要約（テキストファイル）")
     ap.add_argument("--dry-run", action="store_true", help="書き込まずに表示だけ")
     a = ap.parse_args()
+    cfg, out_path = PROVIDERS[a.provider], DATA / f"{a.provider}.json"
     today = datetime.datetime.now(JST).date().isoformat()
-    previous = json.loads(OUT.read_text()) if OUT.exists() else None
-    context = Path(a.context).read_text().strip() if a.context else ""
-    model, text = ask(build_prompt(today, previous, context))
+    previous = json.loads(out_path.read_text()) if out_path.exists() else None
+    context = Path(a.context).read_text().strip() if a.context and Path(a.context).exists() else ""
+    model, text = ask(cfg, build_prompt(today, previous, context))
     summary, picks = parse(text)
     out = {"updatedAt": today, "model": model, "summary": summary, "picks": picks}
     s = json.dumps(out, ensure_ascii=False, indent=2) + "\n"
     if a.dry_run:
         print(s)
     else:
-        OUT.write_text(s); print(f"updated {OUT} with {model}: {len(picks)} picks")
+        out_path.write_text(s); print(f"updated {out_path} with {model}: {len(picks)} picks")
 
 
 if __name__ == "__main__":

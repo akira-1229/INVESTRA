@@ -1,0 +1,59 @@
+# ChatGPT（GitHub Models 経由の OpenAI GPT）におすすめを聞いて data/chatgpt.json を更新する。
+# 毎週土曜の朝に Claude が Gemini/Claude を更新したあとこのワークフローを起動する。
+# 起動されなかった週のために、土曜 11:13 JST にも自動で動く。
+name: Update ChatGPT picks
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "13 2 * * 6"   # 土曜 02:13 UTC = 11:13 JST
+
+permissions:
+  contents: write   # data/chatgpt.json をコミットするため
+  models: read      # GitHub Models を GITHUB_TOKEN で呼ぶため
+
+concurrency:
+  group: update-chatgpt
+  cancel-in-progress: false
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Skip if already updated today (JST)
+        id: check
+        run: |
+          today=$(TZ=Asia/Tokyo date +%F)
+          updated=$(python3 -c "import json;print(json.load(open('data/chatgpt.json')).get('updatedAt') or '')")
+          if [ "$updated" = "$today" ] && [ "${{ github.event_name }}" = "schedule" ]; then
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Ask GPT via GitHub Models
+        if: steps.check.outputs.skip != 'true'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: python3 scripts/update_picks.py chatgpt --context data/news.md
+
+      - name: Commit
+        if: steps.check.outputs.skip != 'true'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/chatgpt.json
+          if git diff --cached --quiet; then echo "no changes"; exit 0; fi
+          git commit -m "Update ChatGPT picks ($(TZ=Asia/Tokyo date +%F))"
+          for i in 1 2 3; do
+            git push origin HEAD:main && exit 0
+            git pull --rebase origin main
+          done
+          exit 1

@@ -55,9 +55,13 @@ GitHub Pages（Settings → Pages → main ブランチのルート）でも公�
 毎週土曜の朝、Claude のクラウドセッションが以下を実行する。
 
 - `data/claude.json`：Claude 自身が市場動向を調べて見直す。
-- `data/gemini.json`：`python3 scripts/update_gemini.py --context ニュース要約.txt` で Gemini API（無料枠）に質問して書き換える。
+- `data/news.md`：Claude が今週の市場ニュースを事実だけまとめる（Gemini・ChatGPT に参考として渡す）。
+- `data/gemini.json`：`python3 scripts/update_picks.py gemini --context data/news.md` で Gemini API（無料枠）に質問して書き換える。
   - APIキーはクラウド環境「INVESTRA」の保存済みキーをネットワーク側で差し込むので、リポジトリには置かない。
-  - 自分のPCで動かすときは `GEMINI_API_KEY=… python3 scripts/update_gemini.py --dry-run`。
+  - 自分のPCで動かすときは `GEMINI_API_KEY=… python3 scripts/update_picks.py gemini --dry-run`。
+- `data/chatgpt.json`：GitHub Actions の「Update ChatGPT picks」が GitHub Models（無料枠）の OpenAI GPT に質問して書き換える。
+  - Claude が土曜の更新の最後に起動する。起動されなかった週も 11:13 JST に自動で動く。Actions タブから手動実行も可。
+  - キーは Actions の GITHUB_TOKEN を使うので設定不要。
 
 ## AIに渡す依頼文の例
 
