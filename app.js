@@ -110,11 +110,16 @@ function openZoom(idx) {
   const { a, data } = lastResults[idx];
   showZoom(zoomHTML(a, data, lastVotes), document.querySelector(`.card[data-idx="${idx}"]`));
 }
+// 最終決定もタブに連動：個別株タブでは stocksPicks 側を出す
+const decisionView = (d) => d && (mode === "stocks"
+  ? { date: d.stocksDecidedAt, memo: d.stocksMemo, picks: d.stocksPicks }
+  : { date: d.decidedAt, memo: d.memo, picks: d.picks });
+
 function openZoomDecision() {
-  const d = decisionView(lastDecision);
-  if (!d?.picks?.length) return;
+  const v = decisionView(lastDecision);
+  if (!v?.picks?.length) return;
   showZoom(
-    zoomHTML({ label: "FINAL DECISION", color: "#00e5e6" }, { updatedAt: d.decidedAt, summary: d.memo, picks: d.picks }, lastVotes),
+    zoomHTML({ label: "FINAL DECISION", color: "#00e5e6" }, { updatedAt: v.date, summary: v.memo, picks: v.picks }, lastVotes),
     document.getElementById("decision").closest("section.panel"));
 }
 function closeZoom() {
@@ -156,10 +161,11 @@ function consensusHTML({ votes, names }) {
 }
 
 function decisionHTML(d, votes) {
-  if (!d?.picks?.length) return `<p class="empty">${mode === "stocks" ? "個別株の最終判断はまだありません" : "まだ決定していません"}</p>`;
-  return `${d.decidedAt ? `<div class="date">決定日: ${esc(d.decidedAt)}</div>` : ""}
-    <ol class="rank">${ranked(d.picks).map((p, i) => compactRowHTML(p, i, votes, "#00e5e6")).join("")}</ol>
-    ${d.memo ? `<p class="memo">${esc(d.memo)}</p>` : ""}
+  const v = decisionView(d);
+  if (!v?.picks?.length) return `<p class="empty">まだ決定していません</p>`;
+  return `${v.date ? `<div class="date">決定日: ${esc(v.date)}</div>` : ""}
+    <ol class="rank">${ranked(v.picks).map((p, i) => compactRowHTML(p, i, votes, "#00e5e6")).join("")}</ol>
+    ${v.memo ? `<p class="memo">${esc(v.memo)}</p>` : ""}
     <p class="tap-hint">パネルをタップすると拡大表示します</p>`;
 }
 
@@ -170,28 +176,13 @@ const view = (d) => d && (mode === "stocks"
   ? { updatedAt: d.stocks?.length ? (d.stocksUpdatedAt || d.updatedAt) : null, summary: d.stocksSummary, picks: d.stocks }
   : d);
 let lastRaw = [], lastFullVotes = new Map();
-// 最終決定も個別株／全体で切り替える（個別株は decision.json の stocks / stocksMemo / stocksDecidedAt）
-const decisionView = (d) => d && (mode === "stocks"
-  ? { decidedAt: d.stocks?.length ? (d.stocksDecidedAt || d.decidedAt) : null, memo: d.stocksMemo, picks: d.stocks }
-  : d);
-
-function paintDecision() {
-  const d = decisionView(lastDecision);
-  document.getElementById("decision").innerHTML = decisionHTML(d, lastVotes);
-  const panel = document.getElementById("decision").closest("section.panel");
-  if (d?.picks?.length) {
-    panel.classList.add("tappable"); panel.setAttribute("role", "button"); panel.setAttribute("tabindex", "0");
-    panel.setAttribute("aria-label", "最終的な投資先を拡大");
-  } else {
-    panel.classList.remove("tappable"); panel.removeAttribute("role"); panel.removeAttribute("tabindex");
-  }
-}
 
 function setMode(m) {
   mode = m;
   try { localStorage.setItem("investra-mode", m); } catch {}
   document.querySelectorAll(".seg button").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.mode === m)));
   document.getElementById("consensus-sub").textContent = m === "stocks" ? "複数のAIが推した個別株" : "複数のAIが推した銘柄（全体）";
+  document.getElementById("decision-sub").textContent = m === "stocks" ? "最終的な投資先（個別株）" : "最終的な投資先";
 }
 document.querySelectorAll(".seg button").forEach((b) => b.onclick = () => { setMode(b.dataset.mode); paint(); });
 
@@ -201,9 +192,18 @@ function paint() {
   const tally = collectVotes(results);
   lastResults = results; lastVotes = tally.votes;
   document.getElementById("advisors").innerHTML = results.map(({ a, data }, i) => advisorCard(a, data, tally.votes, i)).join("");
-  paintDecision();
   document.getElementById("consensus").innerHTML = consensusHTML(tally) +
     `<div class="legend"><span><i class="risk 低"></i>リスク低</span><span><i class="risk 中"></i>中</span><span><i class="risk 高"></i>高</span><span><b class="match">×2</b> 他のAIと重複</span></div>`;
+  if (lastDecision) {
+    document.getElementById("decision").innerHTML = decisionHTML(lastDecision, tally.votes);
+    const panel = document.getElementById("decision").closest("section.panel");
+    if (decisionView(lastDecision)?.picks?.length) {
+      panel.classList.add("tappable"); panel.setAttribute("role", "button"); panel.setAttribute("tabindex", "0");
+      panel.setAttribute("aria-label", "最終的な投資先を拡大");
+    } else {
+      panel.classList.remove("tappable"); panel.removeAttribute("role"); panel.removeAttribute("tabindex");
+    }
+  }
 }
 
 async function render() {
