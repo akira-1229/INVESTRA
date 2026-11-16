@@ -32,7 +32,7 @@ const alertOf = (p) => newsMap.get(keyOf(p)) || (p.name ? newsMap.get(String(p.n
 function alertLineHTML(p) {
   const a = alertOf(p);
   if (!a?.headline) return "";
-  return `<div class="alertline"><span class="warn" aria-hidden="true">⚠</span><span class="atext">${esc(a.headline)}</span></div>`;
+  return `<div class="alertline"><svg class="warn" viewBox="0 0 24 22" aria-hidden="true"><path d="M12 1.5 23 20.5H1z" fill="#ffd60a" stroke="#ffd60a" stroke-width="1.6" stroke-linejoin="round"/><rect x="10.6" y="7" width="2.8" height="7.6" rx="1.2" fill="#111"/><circle cx="12" cy="17.4" r="1.6" fill="#111"/></svg><span class="atext">${esc(a.headline)}</span></div>`;
 }
 
 function compactRowHTML(p, i, votes, color, max = 100) {
