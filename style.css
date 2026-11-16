@@ -346,3 +346,5 @@ html, body { overflow-x: clip; }
 /* 固定した上部バーの高さぶん、本文を下げる（高さはJSで測って --hh に入れる） */
 body { padding-top: var(--hh, 76px); }
 @media (max-width: 640px) { body { padding-top: var(--hh, 56px); } }
+/* iPhone (WebKit) で固定バーが外れたり、ちらついたりしないように */
+header { -webkit-transform: translateZ(0); transform: translateZ(0); will-change: transform; }

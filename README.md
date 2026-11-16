@@ -12,6 +12,8 @@ python3 -m http.server 8000   # → http://localhost:8000
 
 GitHub Pages（Settings → Pages → main ブランチのルート）でも公開できます。
 
+CSS/JS を変えたら `index.html` の `style.css?v=…` と `app.js?v=…` の数字も更新する（スマホに古いファイルが残らないように）。
+
 ## データの置き場所
 
 | ファイル | 書く人 |
