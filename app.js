@@ -191,3 +191,9 @@ btn.onclick = async () => {
 };
 
 render();
+
+// 上部バーは position: fixed。その高さぶん本文を下げる
+const headerEl = document.querySelector("header");
+const setHeaderH = () => document.documentElement.style.setProperty("--hh", `${headerEl.offsetHeight + 10}px`);
+setHeaderH();
+if ("ResizeObserver" in window) new ResizeObserver(setHeaderH).observe(headerEl); else addEventListener("resize", setHeaderH);
