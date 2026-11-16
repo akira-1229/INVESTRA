@@ -1,12 +1,10 @@
 # 個別株の重大ニュース（⚠表示）を Gemini（Google検索つき）で調べて data/news.json を更新する。
-# 1日2回：朝 7:13 JST（日本市場の前）、夜 19:13 JST（米国市場の前）。Actions タブから手動実行も可。
+# ※ Gemini の無料枠では Google 検索が使えず（429）動かないため、自動実行は止めて手動実行だけにしている。
+#   いまの自動更新は Claude の定期タスク（1日2回）が担当。有料キーにしたら schedule を戻せば使える。
 name: Update stock news
 
 on:
   workflow_dispatch:
-  schedule:
-    - cron: "13 22 * * *"   # 22:13 UTC = 7:13 JST
-    - cron: "13 10 * * *"   # 10:13 UTC = 19:13 JST
 
 permissions:
   contents: write

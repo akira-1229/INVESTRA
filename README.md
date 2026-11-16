@@ -67,9 +67,9 @@ Actions タブから手動実行もできる。結果はデフォルトブラン
 
 ## 銘柄ニュース（⚠表示）の自動更新
 
-- Actions「Update stock news」が 1日2回（7:13 / 19:13 JST）動き、`scripts/update_news.py` で Gemini に Google 検索させて
-  アプリに出ている個別株の直近7日の重大ニュースを探し、`data/news.json` を書き換える。
-- 検索の裏付けが取れたものだけを採用。取得に失敗した回は `news.json` を変更しない。キーは Secrets の `GEMINI_API_KEY`。
+- Claude の定期タスクが 1日2回（7:13 / 19:13 JST）、アプリに出ている個別株について直近7日の重大ニュースを Web 検索で調べ、
+  `data/news.json` を書き換えて push する（承認不要）。
+- `scripts/update_news.py`（Gemini＋Google検索）も残してあるが、Gemini の無料枠では検索が使えないため自動実行はしていない。
 
 ## AIに渡す依頼文の例
 
