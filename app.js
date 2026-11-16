@@ -31,7 +31,7 @@ function compactRowHTML(p, i, votes, color, max = 100) {
   return `<li><div class="row">
     <span class="no">${i + 1}</span>
     <span class="title">
-      <span class="name" title="${esc(p.name)}">${riskDot(p)}${esc(p.short || p.name)}</span>
+      <span class="name">${riskDot(p)}${esc(p.name)}</span>
       <span class="sub2">
         ${p.ticker ? `<span class="ticker">${esc(p.ticker)}</span>` : ""}
         ${p.type ? `<span>${esc(p.type)}</span>` : ""}
@@ -70,11 +70,11 @@ function zoomHTML(a, data, votes) {
       return `<li>
         <div class="ztop">
           <span class="no">${i + 1}</span>
-          <div class="zname"><b>${esc(p.short || p.name)}</b>${p.short && p.short !== p.name ? `<small>${esc(p.name)}</small>` : ""}</div>
+          <div class="zname"><b>${esc(p.name)}</b></div>
           ${p.allocation != null ? `<span class="zalloc"><span class="bar"><i style="width:${alloc}%;background:${a.color};color:${a.color}"></i></span>${esc(p.allocation)}<small>%</small></span>` : "<span></span>"}
         </div>
         <div class="ztags">
-          ${p.ticker && p.ticker !== p.short ? `<span class="ticker">${esc(p.ticker)}</span>` : ""}
+          ${p.ticker ? `<span class="ticker">${esc(p.ticker)}</span>` : ""}
           ${p.risk ? `<span class="tag"><i class="risk ${esc(p.risk)}"></i>リスク${esc(p.risk)}</span>` : ""}
           ${tags}
           ${n >= 2 ? `<span class="match">${n}つのAIが推奨</span>` : ""}
@@ -154,7 +154,7 @@ function consensusHTML({ votes, names }) {
   const rows = [...votes].filter(([, s]) => s.size >= 2).sort((x, y) => y[1].size - x[1].size);
   if (!rows.length) return `<p class="empty">まだ重なっている銘柄はありません</p>`;
   return `<table><tr><th>銘柄</th><th>推したAI</th><th>数</th></tr>
-    ${rows.map(([k, s]) => `<tr><td>${riskDot(names.get(k))}${esc(names.get(k).short || names.get(k).name)} <span class="ticker">${esc(names.get(k).ticker)}</span></td>
+    ${rows.map(([k, s]) => `<tr><td>${riskDot(names.get(k))}${esc(names.get(k).name)} <span class="ticker">${esc(names.get(k).ticker)}</span></td>
       <td class="chips">${[...s].map((a) => `<span style="--c:${a.color}">${esc(a.label)}</span>`).join("")}</td>
       <td><b>${s.size}</b>/${ADVISORS.length}</td></tr>`).join("")}</table>`;
 }

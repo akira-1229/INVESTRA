@@ -397,3 +397,6 @@ header .refresh { margin-left: 0; }
   header .seg button { padding: 4px 6px; }
   header .refresh { padding: 4px 6px; gap: 4px; }
 }
+
+/* 銘柄名は正式名称をそのまま表示。長い名前は省略せず折り返す */
+.rank .name { white-space: normal; overflow: visible; text-overflow: clip; overflow-wrap: anywhere; line-height: 1.35; }
