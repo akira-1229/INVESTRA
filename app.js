@@ -1,9 +1,9 @@
 // 各AIは data/<id>.json を更新するだけ。ここに並べる順番でカード表示される。
 const ADVISORS = [
-  { id: "chatgpt", label: "ChatGPT", color: "#10a37f" },
-  { id: "claude",  label: "Claude",  color: "#d97757" },
-  { id: "gemini",  label: "Gemini",  color: "#4285f4" },
-  { id: "muse",    label: "Muse",    color: "#9b59d0" },
+  { id: "chatgpt", label: "ChatGPT", color: "#19f0a8" },
+  { id: "claude",  label: "Claude",  color: "#ff8a5c" },
+  { id: "gemini",  label: "Gemini",  color: "#4da3ff" },
+  { id: "muse",    label: "Muse",    color: "#c77dff" },
 ];
 
 const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) =>
@@ -37,7 +37,7 @@ function rowHTML(p, i, votes, color) {
         </span>
       </span>
       ${p.allocation != null ? `<span class="alloc"><b>${esc(p.allocation)}%</b>
-        <div class="bar"><i style="width:${Math.min(100, Number(p.allocation) || 0)}%;background:${color}"></i></div></span>` : "<span></span>"}
+        <div class="bar"><i style="width:${Math.min(100, Number(p.allocation) || 0)}%;background:${color};color:${color}"></i></div></span>` : "<span></span>"}
     </summary>
     <div class="detail">${p.thesis ? `<p>${esc(p.thesis)}</p>` : ""}<div class="meta">${meta}</div></div>
   </details></li>`;
@@ -77,7 +77,7 @@ function decisionHTML(d, votes) {
   if (!d?.picks?.length) return `<p class="empty">まだ決定していません</p>`;
   return `${d.decidedAt ? `<div class="date">決定日: ${esc(d.decidedAt)}</div>` : ""}
     ${d.memo ? `<p class="summary open">${esc(d.memo)}</p>` : ""}
-    <ol class="rank">${ranked(d.picks).map((p, i) => rowHTML(p, i, votes, "var(--accent)")).join("")}</ol>`;
+    <ol class="rank">${ranked(d.picks).map((p, i) => rowHTML(p, i, votes, "#00e5e6")).join("")}</ol>`;
 }
 
 (async () => {
