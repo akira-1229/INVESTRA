@@ -111,10 +111,10 @@ function openZoom(idx) {
   showZoom(zoomHTML(a, data, lastVotes), document.querySelector(`.card[data-idx="${idx}"]`));
 }
 function openZoomDecision() {
-  const d = lastDecision;
+  const d = decisionView(lastDecision);
   if (!d?.picks?.length) return;
   showZoom(
-    zoomHTML({ label: "FINAL DECISION", color: "#00e5e6" }, { updatedAt: d.decidedAt, summary: d.memo, picks: d.picks }, lastFullVotes),
+    zoomHTML({ label: "FINAL DECISION", color: "#00e5e6" }, { updatedAt: d.decidedAt, summary: d.memo, picks: d.picks }, lastVotes),
     document.getElementById("decision").closest("section.panel"));
 }
 function closeZoom() {
@@ -156,7 +156,7 @@ function consensusHTML({ votes, names }) {
 }
 
 function decisionHTML(d, votes) {
-  if (!d?.picks?.length) return `<p class="empty">まだ決定していません</p>`;
+  if (!d?.picks?.length) return `<p class="empty">${mode === "stocks" ? "個別株の最終判断はまだありません" : "まだ決定していません"}</p>`;
   return `${d.decidedAt ? `<div class="date">決定日: ${esc(d.decidedAt)}</div>` : ""}
     <ol class="rank">${ranked(d.picks).map((p, i) => compactRowHTML(p, i, votes, "#00e5e6")).join("")}</ol>
     ${d.memo ? `<p class="memo">${esc(d.memo)}</p>` : ""}
@@ -170,6 +170,22 @@ const view = (d) => d && (mode === "stocks"
   ? { updatedAt: d.stocks?.length ? (d.stocksUpdatedAt || d.updatedAt) : null, summary: d.stocksSummary, picks: d.stocks }
   : d);
 let lastRaw = [], lastFullVotes = new Map();
+// 最終決定も個別株／全体で切り替える（個別株は decision.json の stocks / stocksMemo / stocksDecidedAt）
+const decisionView = (d) => d && (mode === "stocks"
+  ? { decidedAt: d.stocks?.length ? (d.stocksDecidedAt || d.decidedAt) : null, memo: d.stocksMemo, picks: d.stocks }
+  : d);
+
+function paintDecision() {
+  const d = decisionView(lastDecision);
+  document.getElementById("decision").innerHTML = decisionHTML(d, lastVotes);
+  const panel = document.getElementById("decision").closest("section.panel");
+  if (d?.picks?.length) {
+    panel.classList.add("tappable"); panel.setAttribute("role", "button"); panel.setAttribute("tabindex", "0");
+    panel.setAttribute("aria-label", "最終的な投資先を拡大");
+  } else {
+    panel.classList.remove("tappable"); panel.removeAttribute("role"); panel.removeAttribute("tabindex");
+  }
+}
 
 function setMode(m) {
   mode = m;
@@ -185,24 +201,17 @@ function paint() {
   const tally = collectVotes(results);
   lastResults = results; lastVotes = tally.votes;
   document.getElementById("advisors").innerHTML = results.map(({ a, data }, i) => advisorCard(a, data, tally.votes, i)).join("");
+  paintDecision();
   document.getElementById("consensus").innerHTML = consensusHTML(tally) +
     `<div class="legend"><span><i class="risk 低"></i>リスク低</span><span><i class="risk 中"></i>中</span><span><i class="risk 高"></i>高</span><span><b class="match">×2</b> 他のAIと重複</span></div>`;
 }
 
 async function render() {
   lastRaw = await Promise.all(ADVISORS.map(async (a) => ({ a, data: await load(`data/${a.id}.json`) })));
-  lastFullVotes = collectVotes(lastRaw).votes;  // 最終決定はポートフォリオ全体なので全体の重なりで数える
+  lastFullVotes = collectVotes(lastRaw).votes;
+  lastDecision = await load("data/decision.json");
   setMode(mode);
   paint();
-  lastDecision = await load("data/decision.json");
-  document.getElementById("decision").innerHTML = decisionHTML(lastDecision, lastFullVotes);
-  const panel = document.getElementById("decision").closest("section.panel");
-  if (lastDecision?.picks?.length) {
-    panel.classList.add("tappable"); panel.setAttribute("role", "button"); panel.setAttribute("tabindex", "0");
-    panel.setAttribute("aria-label", "最終的な投資先を拡大");
-  } else {
-    panel.classList.remove("tappable"); panel.removeAttribute("role"); panel.removeAttribute("tabindex");
-  }
 }
 
 // 右上の更新ボタン：ページを再読み込みせずに最新のJSONを取り直す
