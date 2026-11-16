@@ -1,5 +1,60 @@
 {
-  "updatedAt": null,
-  "summary": "",
-  "picks": []
+  "updatedAt": "2026-11-16",
+  "summary": "長期的な資産形成を目的とし、グローバルな株式と安定資産である債券・金を組み合わせた分散ポートフォリオです。",
+  "picks": [
+    {
+      "name": "eMAXIS Slim 全世界株式（オール・カントリー）",
+      "ticker": "",
+      "type": "投資信託",
+      "horizon": "長期",
+      "risk": "中",
+      "allocation": 40,
+      "thesis": "これ一本で全世界の株式に分散投資でき、長期的な成長の恩恵を受けることができます。"
+    },
+    {
+      "name": "eMAXIS Slim 米国株式（S&P500）",
+      "ticker": "",
+      "type": "投資信託",
+      "horizon": "長期",
+      "risk": "中",
+      "allocation": 20,
+      "thesis": "世界経済を牽引する米国市場の主要企業に投資し、高い成長性を追求します。"
+    },
+    {
+      "name": "iシェアーズ・コア 米国総合債券市場 ETF",
+      "ticker": "AGG",
+      "type": "ETF",
+      "horizon": "長期",
+      "risk": "低",
+      "allocation": 15,
+      "thesis": "ポートフォリオ全体のボラティリティを抑え、安定したインカムゲインを確保します。"
+    },
+    {
+      "name": "SPDR ゴールド・シェア",
+      "ticker": "GLD",
+      "type": "ETF",
+      "horizon": "長期",
+      "risk": "中",
+      "allocation": 10,
+      "thesis": "インフレヘッジおよび地政学的リスクに対する安全資産としての役割を期待します。"
+    },
+    {
+      "name": "トヨタ自動車",
+      "ticker": "7203",
+      "type": "日本株",
+      "horizon": "長期",
+      "risk": "中",
+      "allocation": 10,
+      "thesis": "日本の基幹産業を支えるグローバル企業であり、安定した収益基盤と技術力を評価しています。"
+    },
+    {
+      "name": "NEXT FUNDS 日経平均高配当株50指数連動型上場投信",
+      "ticker": "1489",
+      "type": "ETF",
+      "horizon": "長期",
+      "risk": "中",
+      "allocation": 5,
+      "thesis": "日本株の配当利回りに着目し、定期的なキャッシュフローの獲得を目指します。"
+    }
+  ]
 }
