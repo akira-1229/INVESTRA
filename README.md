@@ -51,7 +51,7 @@ CSS/JS を変えたら `index.html` の `style.css?v=…` と `app.js?v=…` の
 - 個別株ランキングは同じファイルに `stocks`（形式は `picks` と同じ。個別企業の株だけで、配分は個別株枠の中での比率）と `stocksSummary` を足す。画面右上の「個別株／全体」で切り替える。
 - `name` 以外は省略可。`short` を書くとカードにはそちらが表示され、正式名はタップで開く詳細に出る。
 - `ticker` が同じ銘柄は「重なり」欄で集計されるので、できるだけ揃える（米国株はティッカー、日本株は証券コード）。
-- `decision.json` は `updatedAt` の代わりに `decidedAt`、`summary` の代わりに `memo` を使う。個別株の最終判断は同じファイルに `stocks`・`stocksMemo`・`stocksDecidedAt` を書く（「個別株」タブで表示）。
+- `decision.json` は `updatedAt` の代わりに `decidedAt`、`summary` の代わりに `memo` を使う。個別株の最終判断は同じファイルに `stocksPicks`・`stocksMemo`・`stocksDecidedAt` を書く（「個別株」タブで表示）。
 
 ## 自動更新（毎週土曜の朝）
 

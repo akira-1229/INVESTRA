@@ -176,7 +176,8 @@ const view = (d) => d && (mode === "stocks"
 let lastRaw = [], lastFullVotes = new Map();
 // 最終決定も個別株／全体で切り替える（個別株は decision.json の stocks / stocksMemo / stocksDecidedAt）
 const decisionView = (d) => d && (mode === "stocks"
-  ? { decidedAt: d.stocks?.length ? (d.stocksDecidedAt || d.decidedAt) : null, memo: d.stocksMemo, picks: d.stocks }
+  ? (() => { const picks = d.stocksPicks || d.stocks;  // 個別株版の決定（stocksPicks。旧名 stocks も読む）
+      return { decidedAt: picks?.length ? (d.stocksDecidedAt || d.decidedAt) : null, memo: d.stocksMemo, picks }; })()
   : d);
 
 function paintDecision() {
