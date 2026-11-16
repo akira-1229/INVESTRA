@@ -1,10 +1,14 @@
 // 各AIは data/<id>.json を更新するだけ。ここに並べる順番でカード表示される。
 const ADVISORS = [
   { id: "claude",  label: "Claude",  color: "#ff8a5c" },
-  { id: "gemini",  label: "Gemini",  color: "#4da3ff" },
-  { id: "muse",    label: "Muse",    color: "#c77dff" },
-  { id: "siri",    label: "Siri",    color: "#ff5fa2" },
+  // Gemini は虹色。color は光り方などに使う代表色、fill がゲージや文字に使う虹のグラデーション
+  { id: "gemini",  label: "Gemini",  color: "#9b8cff",
+    fill: "linear-gradient(90deg, #ff3b5c, #ff9f1a, #ffe600, #2bd96b, #1fb6ff, #6a5cff, #e040fb)" },
+  { id: "muse",    label: "Muse",    color: "#2f5dff" },
+  { id: "siri",    label: "Siri",    color: "#f2f5f8" },
 ];
+const fillOf = (a) => a.fill || a.color;
+const styleOf = (a) => `--c:${a.color};--g:${fillOf(a)}`;
 
 const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) =>
   ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
@@ -35,7 +39,7 @@ function alertLineHTML(p) {
   return `<div class="alertline"><svg class="warn" viewBox="0 0 24 22" aria-hidden="true"><path d="M12 1.5 23 20.5H1z" fill="#ffd60a" stroke="#ffd60a" stroke-width="1.6" stroke-linejoin="round"/><rect x="10.6" y="7" width="2.8" height="7.6" rx="1.2" fill="#111"/><circle cx="12" cy="17.4" r="1.6" fill="#111"/></svg><span class="atext">${esc(a.headline)}</span></div>`;
 }
 
-function compactRowHTML(p, i, votes, color, max = 100) {
+function compactRowHTML(p, i, votes, color, max = 100, fill = color) {
   const n = votes?.get(keyOf(p))?.size ?? 0;
   return `<li><div class="row">
     <span class="no">${i + 1}</span>
@@ -49,18 +53,18 @@ function compactRowHTML(p, i, votes, color, max = 100) {
       ${alertLineHTML(p)}
     </span>
     ${p.allocation != null ? `<span class="alloc"><b>${esc(p.allocation)}<small>%</small></b></span>
-      <span class="gauge"><i style="width:${gaugeWidth(p, max)}%;background:${color};color:${color}"></i></span>` : "<span></span>"}
+      <span class="gauge"><i style="width:${gaugeWidth(p, max)}%;background:${fill};color:${color}"></i></span>` : "<span></span>"}
   </div></li>`;
 }
 
 function advisorCard(a, data, votes, idx) {
   const picks = ranked(data?.picks);
-  return `<article class="card${picks.length ? " tappable" : ""}" style="--c:${a.color}" data-idx="${idx}"
+  return `<article class="card${picks.length ? " tappable" : ""}${a.fill ? " rainbow" : ""}" style="${styleOf(a)}" data-idx="${idx}"
       ${picks.length ? `role="button" tabindex="0" aria-label="${esc(a.label)}のランキングを拡大"` : ""}>
     <div class="card-head"><h3>${esc(a.label)}</h3>
       <span class="date">${data?.updatedAt ? esc(data.updatedAt) : "未更新"}</span></div>
     ${data?.summary ? `<p class="summary">${esc(data.summary)}</p>` : ""}
-    ${picks.length ? `<ol class="rank">${picks.map((p, i) => compactRowHTML(p, i, votes, a.color, maxAlloc(picks))).join("")}</ol>`
+    ${picks.length ? `<ol class="rank">${picks.map((p, i) => compactRowHTML(p, i, votes, a.color, maxAlloc(picks), fillOf(a))).join("")}</ol>`
                    : `<p class="empty">まだ登録されていません</p>`}
   </article>`;
 }
@@ -68,7 +72,7 @@ function advisorCard(a, data, votes, idx) {
 // タップで拡大表示するカード（画面の約80%）。詳細の説明はランキングの下にまとめて出す
 function zoomHTML(a, data, votes) {
   const picks = ranked(data?.picks);
-  return `<div class="zoom-card" style="--c:${a.color}" role="dialog" aria-modal="true" aria-label="${esc(a.label)}のランキング">
+  return `<div class="zoom-card${a.fill ? " rainbow" : ""}" style="${styleOf(a)}" role="dialog" aria-modal="true" aria-label="${esc(a.label)}のランキング">
     <div class="card-head"><h3>${esc(a.label)}</h3><span class="sel">SELECTED</span>
       <span class="date">${data?.updatedAt ? esc(data.updatedAt) : "未更新"}</span>
       <button class="close" type="button" aria-label="閉じる">✕</button></div>
@@ -81,7 +85,7 @@ function zoomHTML(a, data, votes) {
         <div class="ztop">
           <span class="no">${i + 1}</span>
           <div class="zname"><b>${esc(p.name)}</b></div>
-          ${p.allocation != null ? `<span class="zalloc"><span class="bar"><i style="width:${alloc}%;background:${a.color};color:${a.color}"></i></span>${esc(p.allocation)}<small>%</small></span>` : "<span></span>"}
+          ${p.allocation != null ? `<span class="zalloc"><span class="bar"><i style="width:${alloc}%;background:${fillOf(a)};color:${a.color}"></i></span>${esc(p.allocation)}<small>%</small></span>` : "<span></span>"}
         </div>
         ${alertLineHTML(p)}
         <div class="ztags">
@@ -166,7 +170,7 @@ function consensusHTML({ votes, names }) {
   if (!rows.length) return `<p class="empty">まだ重なっている銘柄はありません</p>`;
   return `<table><tr><th>銘柄</th><th>推したAI</th><th>数</th></tr>
     ${rows.map(([k, s]) => `<tr><td>${riskDot(names.get(k))}${esc(names.get(k).name)} <span class="ticker">${esc(names.get(k).ticker)}</span></td>
-      <td class="chips">${[...s].map((a) => `<span style="--c:${a.color}">${esc(a.label)}</span>`).join("")}</td>
+      <td class="chips">${[...s].map((a) => `<span class="${a.fill ? "rainbow" : ""}" style="${styleOf(a)}">${esc(a.label)}</span>`).join("")}</td>
       <td><b>${s.size}</b>/${ADVISORS.length}</td></tr>`).join("")}</table>`;
 }
 
