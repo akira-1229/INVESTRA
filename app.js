@@ -26,6 +26,15 @@ const gaugeWidth = (p, max) => max > 0 ? Math.max(4, Math.round((Number(p.alloca
 const maxAlloc = (picks) => Math.max(0, ...picks.map((p) => Number(p.allocation) || 0));
 const riskDot = (p) => p.risk ? `<i class="risk ${esc(p.risk)}" title="リスク${esc(p.risk)}"></i>` : "";
 
+// 大きなニュース（data/news.json の alerts）を銘柄キーで引く。キーは ticker 優先（keyOf と同じ）
+let newsMap = new Map();
+const alertOf = (p) => newsMap.get(keyOf(p)) || (p.name ? newsMap.get(String(p.name).trim().toUpperCase()) : undefined);
+function alertLineHTML(p) {
+  const a = alertOf(p);
+  if (!a?.headline) return "";
+  return `<div class="alertline"><span class="warn" aria-hidden="true">⚠</span><span class="atext">${esc(a.headline)}</span></div>`;
+}
+
 function compactRowHTML(p, i, votes, color, max = 100) {
   const n = votes?.get(keyOf(p))?.size ?? 0;
   return `<li><div class="row">
@@ -37,6 +46,7 @@ function compactRowHTML(p, i, votes, color, max = 100) {
         ${p.type ? `<span>${esc(p.type)}</span>` : ""}
         ${n >= 2 ? `<span class="match" title="${n}つのAIが推奨">×${n}</span>` : ""}
       </span>
+      ${alertLineHTML(p)}
     </span>
     ${p.allocation != null ? `<span class="alloc"><b>${esc(p.allocation)}<small>%</small></b></span>
       <span class="gauge"><i style="width:${gaugeWidth(p, max)}%;background:${color};color:${color}"></i></span>` : "<span></span>"}
@@ -73,6 +83,7 @@ function zoomHTML(a, data, votes) {
           <div class="zname"><b>${esc(p.name)}</b></div>
           ${p.allocation != null ? `<span class="zalloc"><span class="bar"><i style="width:${alloc}%;background:${a.color};color:${a.color}"></i></span>${esc(p.allocation)}<small>%</small></span>` : "<span></span>"}
         </div>
+        ${alertLineHTML(p)}
         <div class="ztags">
           ${p.ticker ? `<span class="ticker">${esc(p.ticker)}</span>` : ""}
           ${p.risk ? `<span class="tag"><i class="risk ${esc(p.risk)}"></i>リスク${esc(p.risk)}</span>` : ""}
@@ -214,6 +225,11 @@ async function render() {
   lastRaw = await Promise.all(ADVISORS.map(async (a) => ({ a, data: await load(`data/${a.id}.json`) })));
   lastFullVotes = collectVotes(lastRaw).votes;
   lastDecision = await load("data/decision.json");
+  const news = await load("data/news.json");
+  newsMap = new Map();
+  for (const a of news?.alerts ?? []) {
+    if (a?.key && a?.headline) newsMap.set(String(a.key).trim().toUpperCase(), a);
+  }
   setMode(mode);
   paint();
 }

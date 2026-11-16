@@ -416,3 +416,9 @@ ol.rank { padding: 6px 8px 8px; display: flex; flex-direction: column; gap: 5px;
   .rank .row { padding: 4px 5px; }
   .zrank { padding: 6px; gap: 6px; }
 }
+
+/* 大きなニュースがある銘柄の警告行（企業名の下に小さく、左端に⚠） */
+.alertline { display: flex; gap: 4px; align-items: baseline; margin-top: 2px; font-size: .53rem; line-height: 1.45; color: #ffb3ab; }
+.alertline .warn { flex: none; color: #ffd60a; font-size: .6rem; text-shadow: 0 0 6px rgba(255, 214, 10, .8); }
+.zrank .alertline { font-size: .8rem; margin: 3px 0 5px 40px; }
+.zrank .alertline .warn { font-size: .92rem; }
