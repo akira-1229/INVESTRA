@@ -44,16 +44,85 @@ function rowHTML(p, i, votes, color) {
   </details></li>`;
 }
 
-function advisorCard(a, data, votes) {
+function compactRowHTML(p, i, votes, color) {
+  const n = votes?.get(keyOf(p))?.size ?? 0;
+  return `<li><div class="row">
+    <span class="no">${i + 1}</span>
+    <span class="title">
+      <span class="name" title="${esc(p.name)}">${esc(p.short || p.name)}</span>
+      <span class="sub2">
+        ${p.risk ? `<i class="risk ${esc(p.risk)}" title="リスク${esc(p.risk)}"></i>` : ""}
+        ${p.ticker ? `<span class="ticker">${esc(p.ticker)}</span>` : ""}
+        ${p.type ? `<span>${esc(p.type)}</span>` : ""}
+        ${n >= 2 ? `<span class="match" title="${n}つのAIが推奨">×${n}</span>` : ""}
+      </span>
+    </span>
+    ${p.allocation != null ? `<span class="alloc"><b>${esc(p.allocation)}%</b>
+      <div class="bar"><i style="width:${Math.min(100, Number(p.allocation) || 0)}%;background:${color};color:${color}"></i></div></span>` : "<span></span>"}
+  </div></li>`;
+}
+
+function advisorCard(a, data, votes, idx) {
   const picks = ranked(data?.picks);
-  return `<article class="card" style="--c:${a.color}">
+  return `<article class="card${picks.length ? " tappable" : ""}" style="--c:${a.color}" data-idx="${idx}"
+      ${picks.length ? `role="button" tabindex="0" aria-label="${esc(a.label)}のランキングを拡大"` : ""}>
     <div class="card-head"><h3>${esc(a.label)}</h3>
       <span class="date">${data?.updatedAt ? esc(data.updatedAt) : "未更新"}</span></div>
-    ${data?.summary ? `<p class="summary" title="クリックで全文">${esc(data.summary)}</p>` : ""}
-    ${picks.length ? `<ol class="rank">${picks.map((p, i) => rowHTML(p, i, votes, a.color)).join("")}</ol>`
+    ${data?.summary ? `<p class="summary">${esc(data.summary)}</p>` : ""}
+    ${picks.length ? `<ol class="rank">${picks.map((p, i) => compactRowHTML(p, i, votes, a.color)).join("")}</ol>`
                    : `<p class="empty">まだ登録されていません</p>`}
   </article>`;
 }
+
+// タップで拡大表示するカード
+function zoomHTML(a, data, votes) {
+  const picks = ranked(data?.picks);
+  return `<div class="zoom-card" style="--c:${a.color}" role="dialog" aria-modal="true" aria-label="${esc(a.label)}のおすすめ">
+    <div class="card-head"><h3>${esc(a.label)}</h3>
+      <span class="date">${data?.updatedAt ? `更新 ${esc(data.updatedAt)}` : "未更新"}</span>
+      <button class="close" type="button" aria-label="閉じる">✕</button></div>
+    ${data?.summary ? `<p class="zsummary">${esc(data.summary)}</p>` : ""}
+    <ol class="zrank">${picks.map((p, i) => {
+      const n = votes?.get(keyOf(p))?.size ?? 0;
+      const tags = [p.type, p.horizon].filter(Boolean).map((t) => `<span class="tag">${esc(t)}</span>`).join("");
+      return `<li>
+        <div class="ztop">
+          <span class="no">${i + 1}</span>
+          <div class="zname"><b>${esc(p.short || p.name)}</b>${p.short && p.short !== p.name ? `<small>${esc(p.name)}</small>` : ""}</div>
+          ${p.allocation != null ? `<span class="zalloc">${esc(p.allocation)}<small>%</small></span>` : ""}
+        </div>
+        ${p.allocation != null ? `<div class="bar"><i style="width:${Math.min(100, Number(p.allocation) || 0)}%;background:${a.color};color:${a.color}"></i></div>` : ""}
+        <div class="ztags">
+          ${p.ticker ? `<span class="ticker">${esc(p.ticker)}</span>` : ""}
+          ${p.risk ? `<span class="tag"><i class="risk ${esc(p.risk)}"></i> リスク${esc(p.risk)}</span>` : ""}
+          ${tags}
+          ${n >= 2 ? `<span class="match">${n}つのAIが推奨</span>` : ""}
+        </div>
+        ${p.thesis ? `<p class="zthesis">${esc(p.thesis)}</p>` : ""}
+      </li>`;
+    }).join("")}</ol>
+  </div>`;
+}
+
+let lastResults = [], lastVotes = new Map();
+const zoom = document.getElementById("zoom");
+function openZoom(idx) {
+  const { a, data } = lastResults[idx];
+  zoom.innerHTML = zoomHTML(a, data, lastVotes);
+  zoom.hidden = false;
+  document.body.classList.add("noscroll");
+  zoom.querySelector(".close").focus();
+}
+function closeZoom() { zoom.hidden = true; zoom.innerHTML = ""; document.body.classList.remove("noscroll"); }
+zoom.addEventListener("click", (e) => { if (e.target === zoom || e.target.closest(".close")) closeZoom(); });
+document.addEventListener("keydown", (e) => { if (e.key === "Escape" && !zoom.hidden) closeZoom(); });
+document.getElementById("advisors").addEventListener("click", (e) => {
+  const card = e.target.closest(".card.tappable"); if (card) openZoom(+card.dataset.idx);
+});
+document.getElementById("advisors").addEventListener("keydown", (e) => {
+  const card = e.target.closest(".card.tappable");
+  if (card && (e.key === "Enter" || e.key === " ")) { e.preventDefault(); openZoom(+card.dataset.idx); }
+});
 
 function collectVotes(results) {
   const votes = new Map(), names = new Map();
@@ -84,11 +153,11 @@ function decisionHTML(d, votes) {
 async function render() {
   const results = await Promise.all(ADVISORS.map(async (a) => ({ a, data: await load(`data/${a.id}.json`) })));
   const tally = collectVotes(results);
-  document.getElementById("advisors").innerHTML = results.map(({ a, data }) => advisorCard(a, data, tally.votes)).join("");
+  lastResults = results; lastVotes = tally.votes;
+  document.getElementById("advisors").innerHTML = results.map(({ a, data }, i) => advisorCard(a, data, tally.votes, i)).join("");
   document.getElementById("consensus").innerHTML = consensusHTML(tally) +
     `<div class="legend"><span><i class="risk 低"></i>リスク低</span><span><i class="risk 中"></i>中</span><span><i class="risk 高"></i>高</span><span><b class="match">×2</b> 他のAIと重複</span></div>`;
   document.getElementById("decision").innerHTML = decisionHTML(await load("data/decision.json"), tally.votes);
-  document.querySelectorAll(".card .summary").forEach((el) => el.onclick = () => el.classList.toggle("open"));
 }
 
 // 右上の更新ボタン：ページを再読み込みせずに最新のJSONを取り直す
