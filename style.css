@@ -400,3 +400,19 @@ header .refresh { margin-left: 0; }
 
 /* 銘柄名は正式名称をそのまま表示。長い名前は省略せず折り返す */
 .rank .name { white-space: normal; overflow: visible; text-overflow: clip; overflow-wrap: anywhere; line-height: 1.35; }
+
+/* ===== 1社ごとに薄い線で囲う ===== */
+ol.rank { padding: 6px 8px 8px; display: flex; flex-direction: column; gap: 5px; }
+.rank li, .rank li:first-child { border: 1px solid rgba(120, 220, 230, .16); border-radius: 4px; background: rgba(255, 255, 255, .015); }
+.rank .row { padding: 6px 8px; }
+.panel ol.rank { padding: 4px 0 6px; }
+.panel .rank .row { padding: 6px 8px; }
+.zrank { padding: 8px 10px; display: flex; flex-direction: column; gap: 8px; }
+.zrank li, .zrank li:first-child { border: 1px solid rgba(120, 220, 230, .18); border-radius: 5px; }
+.zdetail { border: 1px solid rgba(120, 220, 230, .14); border-radius: 5px; padding: 10px 12px; margin-top: 8px; }
+.zdetail:first-of-type { border-top: 1px solid rgba(120, 220, 230, .14); }
+@media (max-width: 640px) {
+  ol.rank { padding: 4px 4px 6px; gap: 4px; }
+  .rank .row { padding: 4px 5px; }
+  .zrank { padding: 6px; gap: 6px; }
+}
