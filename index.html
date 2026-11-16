@@ -4,34 +4,33 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>INVESTRA</title>
+<link rel="icon" href="favicon.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
 <header>
+  <img class="logo" src="apple-touch-icon.png" alt="" onerror="this.remove()">
   <h1>INVESTRA</h1>
-  <p class="sub">4つのAIのおすすめ投資先を並べて、最終判断は自分で。</p>
+  <span class="sub">4つのAIのおすすめ → 最終判断は自分で</span>
 </header>
 
 <main>
-  <section>
-    <h2>AI別のおすすめ</h2>
-    <div id="advisors" class="grid"></div>
-  </section>
+  <div id="advisors" class="board"></div>
 
-  <section>
-    <h2>重なり（複数のAIが推した銘柄）</h2>
-    <p class="note">ティッカー（なければ名前）が一致したものを集計しています。</p>
-    <div id="consensus"></div>
-  </section>
-
-  <section>
-    <h2>最終的な投資先（自分の判断）</h2>
-    <p class="note"><code>data/decision.json</code> を編集して記録します。</p>
-    <div id="decision"></div>
-  </section>
+  <div class="lower">
+    <section class="panel">
+      <h2>重なり <small>複数のAIが推した銘柄</small></h2>
+      <div id="consensus"></div>
+    </section>
+    <section class="panel">
+      <h2>最終的な投資先 <small>data/decision.json</small></h2>
+      <div id="decision"></div>
+    </section>
+  </div>
 </main>
 
-<footer>投資判断は自己責任で。AIの推奨は情報であり、助言ではありません。</footer>
+<footer>銘柄をタップすると理由が開きます。AIの推奨は情報であり、投資助言ではありません。</footer>
 <script src="app.js"></script>
 </body>
 </html>
