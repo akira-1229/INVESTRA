@@ -183,12 +183,32 @@ async function render() {
 
 // 右上の更新ボタン：ページを再読み込みせずに最新のJSONを取り直す
 const btn = document.getElementById("refresh");
+// 公開中のページの版（index.html の app.js?v=…）が今のものと違えば、新しい版に読み替える。
+// ホーム画面に追加したアプリは自分では再読み込みしないので、これで最新版に追いつかせる。
+const currentVersion = (document.querySelector('script[src*="app.js"]')?.getAttribute("src").match(/v=(\w+)/) || [])[1];
+async function updateAppIfNewer() {
+  try {
+    const res = await fetch(`index.html?check=${Date.now()}`, { cache: "no-store" });
+    if (!res.ok) return false;
+    const latest = ((await res.text()).match(/app\.js\?v=(\w+)/) || [])[1];
+    if (latest && currentVersion && latest !== currentVersion) {
+      location.replace(`${location.pathname}?v=${latest}`);  // URLを変えてキャッシュを使わせない
+      return true;
+    }
+  } catch {}
+  return false;
+}
+
 btn.onclick = async () => {
   if (btn.classList.contains("busy")) return;
   btn.classList.add("busy");
+  if (await updateAppIfNewer()) return;
   await Promise.all([render(), new Promise((r) => setTimeout(r, 700))]);
   btn.classList.remove("busy");
 };
+// アプリを開き直したとき（ホーム画面から戻ったとき）も確認する
+document.addEventListener("visibilitychange", () => { if (document.visibilityState === "visible") updateAppIfNewer(); });
+updateAppIfNewer();
 
 render();
 
