@@ -430,3 +430,9 @@ ol.rank { padding: 6px 8px 8px; display: flex; flex-direction: column; gap: 5px;
 /* 上部バーの下線：左端から右端まで（区切り線と同じ 2pt） */
 header { border-bottom: 0; }
 header::after { left: 0 !important; right: 0; width: auto; height: 2pt; bottom: 0; background: var(--accent); box-shadow: 0 0 8px rgba(0, 229, 230, .45); }
+
+/* 区画線：中央が一番濃く、両端へ向かって徐々に薄く */
+.zone + .zone::after {
+  background: linear-gradient(90deg, rgba(0, 229, 230, 0) 0%, rgba(0, 229, 230, .35) 20%, var(--accent) 50%, rgba(0, 229, 230, .35) 80%, rgba(0, 229, 230, 0) 100%);
+  box-shadow: none; filter: drop-shadow(0 0 6px rgba(0, 229, 230, .5));
+}
