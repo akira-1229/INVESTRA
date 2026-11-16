@@ -381,3 +381,19 @@ td .risk { margin-right: 6px; vertical-align: 1px; }
   .name .risk { width: 6px; height: 6px; margin-right: 3px; vertical-align: 0; }
   .zalloc .bar { display: block; }
 }
+
+/* 個別株／全体の切り替えは上部バー（更新ボタンの左）に置く */
+header .seg { margin-left: auto; align-self: center; }
+header .refresh { margin-left: 0; }
+@media (max-width: 640px) {
+  header { gap: 6px; flex-wrap: nowrap; }
+  header h1 { font-size: .82rem; letter-spacing: .14em; }
+  header .seg button { padding: 4px 8px; font-size: .62rem; }
+  header .refresh { padding: 4px 8px; font-size: .7rem; flex: none; }
+}
+@media (max-width: 380px) {
+  header h1 { font-size: .7rem; letter-spacing: .08em; }
+  .logo3d { --s: 26px; margin-left: 0; }
+  header .seg button { padding: 4px 6px; }
+  header .refresh { padding: 4px 6px; gap: 4px; }
+}
