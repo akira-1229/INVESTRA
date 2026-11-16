@@ -1,11 +1,11 @@
 // 各AIは data/<id>.json を更新するだけ。ここに並べる順番でカード表示される。
 const ADVISORS = [
-  { id: "claude",  label: "Claude",  color: "#ff8a5c" },
+  { id: "claude",  label: "Claude",  color: "#ff8a5c", icon: "icons/claude.png" },
   // Gemini は虹色。color は光り方などに使う代表色、fill がゲージや文字に使う虹のグラデーション
-  { id: "gemini",  label: "Gemini",  color: "#a9a6d8",
+  { id: "gemini",  label: "Gemini",  color: "#a9a6d8", icon: "icons/gemini.png",
     fill: "linear-gradient(90deg, #e8919f, #e9b48a, #e3d38f, #9dcfa9, #8ebfdf, #a3a6e3, #c9a3dc)" },
-  { id: "muse",    label: "Muse",    color: "#2f5dff" },
-  { id: "siri",    label: "Siri",    color: "#f2f5f8" },
+  { id: "muse",    label: "Muse",    color: "#2f5dff", icon: "icons/muse.png" },
+  { id: "siri",    label: "Siri",    color: "#b9c3cc", icon: "icons/siri.png" },
 ];
 const fillOf = (a) => a.fill || a.color;
 const styleOf = (a) => `--c:${a.color};--g:${fillOf(a)}`;
@@ -61,7 +61,7 @@ function advisorCard(a, data, votes, idx) {
   const picks = ranked(data?.picks);
   return `<article class="card${picks.length ? " tappable" : ""}${a.fill ? " rainbow" : ""}" style="${styleOf(a)}" data-idx="${idx}"
       ${picks.length ? `role="button" tabindex="0" aria-label="${esc(a.label)}のランキングを拡大"` : ""}>
-    <div class="card-head"><h3>${esc(a.label)}</h3>
+    <div class="card-head"><h3>${a.icon ? `<img class="ai-icon" src="${a.icon}" alt="">` : ""}${esc(a.label)}</h3>
       <span class="date">${data?.updatedAt ? esc(data.updatedAt) : "未更新"}</span></div>
     ${data?.summary ? `<p class="summary">${esc(data.summary)}</p>` : ""}
     ${picks.length ? `<ol class="rank">${picks.map((p, i) => compactRowHTML(p, i, votes, a.color, maxAlloc(picks), fillOf(a))).join("")}</ol>`
@@ -73,7 +73,7 @@ function advisorCard(a, data, votes, idx) {
 function zoomHTML(a, data, votes) {
   const picks = ranked(data?.picks);
   return `<div class="zoom-card${a.fill ? " rainbow" : ""}" style="${styleOf(a)}" role="dialog" aria-modal="true" aria-label="${esc(a.label)}のランキング">
-    <div class="card-head"><h3>${esc(a.label)}</h3><span class="sel">SELECTED</span>
+    <div class="card-head"><h3>${a.icon ? `<img class="ai-icon" src="${a.icon}" alt="">` : ""}${esc(a.label)}</h3><span class="sel">SELECTED</span>
       <span class="date">${data?.updatedAt ? esc(data.updatedAt) : "未更新"}</span>
       <button class="close" type="button" aria-label="閉じる">✕</button></div>
     <div class="zbody">

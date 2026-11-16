@@ -460,3 +460,14 @@ header::after { left: 0 !important; right: 0; width: auto; height: 2pt; bottom: 
 .card.rainbow .card-head { background: var(--g) border-box top / 100% 4px no-repeat, linear-gradient(90deg, rgba(169, 166, 216, .1), transparent 70%); }
 .zoom-card.rainbow { box-shadow: 0 0 40px rgba(169, 166, 216, .18); }
 .zoom-card.rainbow .sel { box-shadow: none; }
+
+/* ===== 各AIのアイコン（名前の左） ===== */
+.card-head h3 { display: inline-flex; align-items: center; gap: 7px; }
+.ai-icon { width: 20px; height: 20px; object-fit: contain; flex: none; }
+.zoom-card .ai-icon { width: 26px; height: 26px; }
+.card.rainbow .card-head h3 .ai-icon, .zoom-card.rainbow .card-head h3 .ai-icon { -webkit-text-fill-color: initial; }
+@media (max-width: 640px) {
+  .card-head h3 { gap: 5px; }
+  .ai-icon { width: 15px; height: 15px; }
+  .zoom-card .ai-icon { width: 20px; height: 20px; }
+}
