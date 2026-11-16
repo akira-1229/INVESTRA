@@ -65,6 +65,12 @@ CSS/JS を変えたら `index.html` の `style.css?v=…` と `app.js?v=…` の
 Claude が起動しなかった週も、Gemini は 11:07 に自動で動く（その日すでに更新済みなら何もしない）。
 Actions タブから手動実行もできる。結果はデフォルトブランチと `main` の両方に書き込む。
 
+## 銘柄ニュース（⚠表示）の自動更新
+
+- Actions「Update stock news」が 1日2回（7:13 / 19:13 JST）動き、`scripts/update_news.py` で Gemini に Google 検索させて
+  アプリに出ている個別株の直近7日の重大ニュースを探し、`data/news.json` を書き換える。
+- 検索の裏付けが取れたものだけを採用。取得に失敗した回は `news.json` を変更しない。キーは Secrets の `GEMINI_API_KEY`。
+
 ## AIに渡す依頼文の例
 
 > 以下のJSON形式で、(1) ポートフォリオ全体のおすすめ投資先を `picks` に5〜7件、(2) オルカンやS&P500などの長期インデックスとは別枠で買う個別株のランキングを `stocks` に5〜7件（個別企業の株だけ。投資信託・ETFは入れない）出してください。`risk` は「低・中・高」のどれか、`allocation` はそれぞれ合計100になる配分(%)。`short` には短い表示名を入れてください。（上の形式を貼り、`stocksSummary` と `stocks` の欄も足す）
