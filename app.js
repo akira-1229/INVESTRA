@@ -58,7 +58,6 @@ function zoomHTML(a, data, votes) {
     <div class="card-head"><h3>${esc(a.label)}</h3><span class="sel">SELECTED</span>
       <span class="date">${data?.updatedAt ? esc(data.updatedAt) : "未更新"}</span>
       <button class="close" type="button" aria-label="閉じる">✕</button></div>
-    ${data?.summary ? `<p class="zsummary">${esc(data.summary)}</p>` : ""}
     <div class="zbody">
     <ol class="zrank">${picks.map((p, i) => {
       const n = votes?.get(keyOf(p))?.size ?? 0;
@@ -80,6 +79,7 @@ function zoomHTML(a, data, votes) {
     }).join("")}</ol>
     <div class="zdetails">
       <h4>詳細</h4>
+      ${data?.summary ? `<p class="zsummary">${esc(data.summary)}</p>` : ""}
       ${picks.map((p, i) => {
         const meta = [p.type, p.horizon, p.risk && `リスク${p.risk}`].filter(Boolean).map(esc).join(" ・ ");
         return `<div class="zdetail">
@@ -158,8 +158,8 @@ function consensusHTML({ votes, names }) {
 function decisionHTML(d, votes) {
   if (!d?.picks?.length) return `<p class="empty">まだ決定していません</p>`;
   return `${d.decidedAt ? `<div class="date">決定日: ${esc(d.decidedAt)}</div>` : ""}
-    ${d.memo ? `<p class="summary open">${esc(d.memo)}</p>` : ""}
     <ol class="rank">${ranked(d.picks).map((p, i) => compactRowHTML(p, i, votes, "#00e5e6")).join("")}</ol>
+    ${d.memo ? `<p class="memo">${esc(d.memo)}</p>` : ""}
     <p class="tap-hint">パネルをタップすると拡大表示します</p>`;
 }
 

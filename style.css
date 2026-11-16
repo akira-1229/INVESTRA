@@ -290,3 +290,53 @@ body.noscroll { overflow: hidden; }
   .zd-head b { font-size: .9rem; } .zdetail p { font-size: .82rem; line-height: 1.75; }
 }
 @media (prefers-reduced-motion: reduce) { .zoom, .zoom-card { animation: none; } }
+
+/* ===== 上部バーを固定 ===== */
+header { position: sticky; top: 0; z-index: 10; max-width: none; margin: 0 0 14px;
+  padding-left: max(16px, calc((100% - 1400px) / 2 + 16px)); padding-right: max(16px, calc((100% - 1400px) / 2 + 16px));
+  background: rgba(7, 9, 12, .82); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); }
+header::after { left: max(16px, calc((100% - 1400px) / 2 + 16px)); }
+
+/* ===== 3つの区画（ランキング／コンセンサス／最終決定）を分ける ===== */
+.zone + .zone { position: relative; margin-top: 26px; padding-top: 26px; border-top: 1px solid rgba(120, 220, 230, .22); }
+.zone + .zone::before { content: ""; position: absolute; left: 0; top: -1px; width: 90px; height: 1px;
+  background: var(--accent); box-shadow: var(--glow); }
+.zone-label { font-family: var(--disp); font-size: .8rem; letter-spacing: .16em; color: var(--accent); margin: 0 0 10px;
+  text-shadow: 0 0 8px rgba(0, 229, 230, .5); }
+.zone-label small { color: var(--muted); font-family: var(--mono); font-weight: 400; font-size: .66rem; margin-left: 8px;
+  letter-spacing: .04em; text-shadow: none; }
+.memo { margin: 10px 0 0; padding: 8px 0 0 10px; border-top: 1px dashed rgba(120, 220, 230, .18); border-left: 2px solid var(--accent);
+  font-size: .76rem; line-height: 1.7; color: #9fb9bf; }
+
+/* ===== 拡大画面：横スクロール禁止・文字の重なり防止 ===== */
+.zoom { overflow: hidden; touch-action: pan-y; overscroll-behavior: contain; }
+.zoom-card, .zbody { overflow-x: hidden; }
+.zbody { overscroll-behavior: contain; -webkit-overflow-scrolling: touch; }
+.zoom-card .card-head { flex-wrap: wrap; row-gap: 4px; }
+.ztop > * { min-width: 0; }
+.zname { flex-direction: column; align-items: flex-start; gap: 1px; }
+.zname b { white-space: normal; overflow-wrap: anywhere; line-height: 1.35; }
+.zname small { white-space: normal; overflow-wrap: anywhere; }
+.zalloc { flex: none; white-space: nowrap; }
+.ztags { flex-wrap: wrap; white-space: normal; overflow: visible; row-gap: 4px; }
+.zdetails .zsummary { margin: 0 0 8px; display: block; -webkit-line-clamp: unset; overflow: visible; }
+.zd-head { flex-wrap: wrap; } .zd-head b { overflow-wrap: anywhere; }
+@media (max-width: 640px) {
+  header { margin-bottom: 8px; padding-left: 8px; padding-right: 8px; }
+  header::after { left: 8px; }
+  .zone + .zone { margin-top: 18px; padding-top: 18px; }
+  .zone-label { font-size: .62rem; margin-bottom: 6px; } .zone-label small { font-size: .5rem; }
+  .memo { font-size: .62rem; }
+  .zalloc .bar { display: none; }
+  .zoom-card .card-head h3 { font-size: .95rem; letter-spacing: .08em; }
+}
+/* 拡大画面の見出しは1行に収める（✕ボタンが落ちないように） */
+.zoom-card .card-head { flex-wrap: nowrap; gap: 8px; }
+.zoom-card .card-head h3 { min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.zoom-card .sel, .zoom-card .date, .zoom-card .close { flex: none; }
+@media (max-width: 640px) {
+  .zoom-card .card-head h3 { font-size: .8rem; letter-spacing: .04em; }
+  .zoom-card .sel { font-size: .48rem; letter-spacing: .08em; padding: 1px 4px; }
+  .zoom-card .date { font-size: .5rem; }
+}
+html, body { overflow-x: hidden; }
