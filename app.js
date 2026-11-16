@@ -74,31 +74,31 @@ function advisorCard(a, data, votes, idx) {
   </article>`;
 }
 
-// タップで拡大表示するカード
+// タップで拡大表示するカード（画面の約80%）
 function zoomHTML(a, data, votes) {
   const picks = ranked(data?.picks);
-  return `<div class="zoom-card" style="--c:${a.color}" role="dialog" aria-modal="true" aria-label="${esc(a.label)}のおすすめ">
-    <div class="card-head"><h3>${esc(a.label)}</h3>
-      <span class="date">${data?.updatedAt ? `更新 ${esc(data.updatedAt)}` : "未更新"}</span>
+  return `<div class="zoom-card" style="--c:${a.color}" role="dialog" aria-modal="true" aria-label="${esc(a.label)}のランキング">
+    <div class="card-head"><h3>${esc(a.label)}</h3><span class="sel">SELECTED</span>
+      <span class="date">${data?.updatedAt ? esc(data.updatedAt) : "未更新"}</span>
       <button class="close" type="button" aria-label="閉じる">✕</button></div>
     ${data?.summary ? `<p class="zsummary">${esc(data.summary)}</p>` : ""}
     <ol class="zrank">${picks.map((p, i) => {
       const n = votes?.get(keyOf(p))?.size ?? 0;
       const tags = [p.type, p.horizon].filter(Boolean).map((t) => `<span class="tag">${esc(t)}</span>`).join("");
+      const alloc = Math.min(100, Number(p.allocation) || 0);
       return `<li>
         <div class="ztop">
           <span class="no">${i + 1}</span>
           <div class="zname"><b>${esc(p.short || p.name)}</b>${p.short && p.short !== p.name ? `<small>${esc(p.name)}</small>` : ""}</div>
-          ${p.allocation != null ? `<span class="zalloc">${esc(p.allocation)}<small>%</small></span>` : ""}
+          ${p.allocation != null ? `<span class="zalloc"><span class="bar"><i style="width:${alloc}%;background:${a.color};color:${a.color}"></i></span>${esc(p.allocation)}<small>%</small></span>` : "<span></span>"}
         </div>
-        ${p.allocation != null ? `<div class="bar"><i style="width:${Math.min(100, Number(p.allocation) || 0)}%;background:${a.color};color:${a.color}"></i></div>` : ""}
         <div class="ztags">
-          ${p.ticker ? `<span class="ticker">${esc(p.ticker)}</span>` : ""}
-          ${p.risk ? `<span class="tag"><i class="risk ${esc(p.risk)}"></i> リスク${esc(p.risk)}</span>` : ""}
+          ${p.ticker && p.ticker !== p.short ? `<span class="ticker">${esc(p.ticker)}</span>` : ""}
+          ${p.risk ? `<span class="tag"><i class="risk ${esc(p.risk)}"></i>リスク${esc(p.risk)}</span>` : ""}
           ${tags}
           ${n >= 2 ? `<span class="match">${n}つのAIが推奨</span>` : ""}
         </div>
-        ${p.thesis ? `<p class="zthesis">${esc(p.thesis)}</p>` : ""}
+        ${p.thesis ? `<p class="zthesis" title="${esc(p.thesis)}">${esc(p.thesis)}</p>` : ""}
       </li>`;
     }).join("")}</ol>
   </div>`;
@@ -108,12 +108,21 @@ let lastResults = [], lastVotes = new Map();
 const zoom = document.getElementById("zoom");
 function openZoom(idx) {
   const { a, data } = lastResults[idx];
+  const card = document.querySelector(`.card[data-idx="${idx}"]`);
+  document.querySelectorAll(".card.selected").forEach((c) => c.classList.remove("selected"));
+  card?.classList.add("selected");
   zoom.innerHTML = zoomHTML(a, data, lastVotes);
   zoom.hidden = false;
+  // 押したカードの位置から拡大して見えるように
+  const zc = zoom.querySelector(".zoom-card"), r = card?.getBoundingClientRect(), z = zc.getBoundingClientRect();
+  if (r) { zc.style.setProperty("--ox", `${r.left + r.width / 2 - z.left}px`); zc.style.setProperty("--oy", `${r.top + r.height / 2 - z.top}px`); }
   document.body.classList.add("noscroll");
-  zoom.querySelector(".close").focus();
+  zoom.querySelector(".close").focus({ preventScroll: true });
 }
-function closeZoom() { zoom.hidden = true; zoom.innerHTML = ""; document.body.classList.remove("noscroll"); }
+function closeZoom() {
+  zoom.hidden = true; zoom.innerHTML = ""; document.body.classList.remove("noscroll");
+  document.querySelectorAll(".card.selected").forEach((c) => c.classList.remove("selected"));
+}
 zoom.addEventListener("click", (e) => { if (e.target === zoom || e.target.closest(".close")) closeZoom(); });
 document.addEventListener("keydown", (e) => { if (e.key === "Escape" && !zoom.hidden) closeZoom(); });
 document.getElementById("advisors").addEventListener("click", (e) => {
