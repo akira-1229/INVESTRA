@@ -64,18 +64,18 @@ ol.rank { list-style: none; margin: 0; padding: 0 0 8px; }
 .rank li { border-top: 1px solid rgba(120, 220, 230, .07); }
 .rank li:first-child { border-top: 0; }
 .rank details > summary { list-style: none; cursor: pointer; display: grid; align-items: center;
-  grid-template-columns: 26px 1fr auto; gap: 10px; padding: 7px 14px; transition: background .15s; }
+  grid-template-columns: 22px 1fr auto; gap: 8px; padding: 5px 12px; transition: background .15s; }
 .rank details > summary::-webkit-details-marker { display: none; }
 .rank details[open] > summary, .rank summary:hover { background: var(--soft); }
-.no { width: 26px; height: 22px; display: grid; place-items: center; font-family: var(--mono); font-size: .72rem; font-weight: 700;
+.no { width: 22px; height: 18px; display: grid; place-items: center; font-family: var(--mono); font-size: .64rem; font-weight: 700;
       color: var(--muted); border: 1px solid var(--line);
       clip-path: polygon(4px 0, 100% 0, calc(100% - 4px) 100%, 0 100%); background: rgba(255,255,255,.02); }
 .rank li:nth-child(1) .no { color: #000; background: var(--accent); border-color: var(--accent); box-shadow: var(--glow); }
 .rank li:nth-child(2) .no { color: var(--accent); border-color: var(--accent); }
 .rank li:nth-child(3) .no { color: #a8eef0; border-color: rgba(0, 229, 230, .45); }
 .title { min-width: 0; }
-.name { font-weight: 600; font-size: .84rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block; color: #eafcfd; }
-.sub2 { display: flex; align-items: center; gap: 6px; font-size: .68rem; color: var(--muted); }
+.name { font-weight: 600; font-size: .74rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block; color: #eafcfd; }
+.sub2 { display: flex; align-items: center; gap: 6px; font-size: .62rem; line-height: 1.3; color: var(--muted); white-space: nowrap; overflow: hidden; }
 .ticker { color: var(--accent); font-family: var(--mono); font-weight: 600; letter-spacing: .04em; }
 .risk { width: 7px; height: 7px; border-radius: 50%; display: inline-block; }
 .risk.低 { background: var(--low); box-shadow: 0 0 6px var(--low); }
@@ -84,10 +84,10 @@ ol.rank { list-style: none; margin: 0; padding: 0 0 8px; }
 .match { font-family: var(--mono); font-size: .62rem; font-weight: 700; color: var(--accent); border: 1px solid var(--accent);
          padding: 0 4px; text-shadow: 0 0 6px var(--accent); }
 .alloc { text-align: right; width: 54px; font-family: var(--mono); }
-.alloc b { font-size: .84rem; color: #eafcfd; }
+.alloc b { font-size: .74rem; color: #eafcfd; }
 .bar { height: 3px; background: rgba(255,255,255,.06); margin-top: 3px; }
 .bar i { display: block; height: 100%; box-shadow: 0 0 6px currentColor; }
-.detail { padding: 2px 14px 12px 50px; font-size: .76rem; color: #b8d3d8; }
+.detail { padding: 2px 12px 10px 42px; font-size: .7rem; color: #b8d3d8; }
 .detail p { margin: 0 0 4px; }
 .detail .meta { color: var(--muted); font-family: var(--mono); font-size: .66rem; }
 
@@ -136,12 +136,12 @@ td b { font-family: var(--mono); color: var(--accent); }
   .summary { display: none; }
   .board { gap: 6px; }
   .card-head { padding: 8px 8px 5px; }
-  .rank details > summary { grid-template-columns: 14px 1fr auto; gap: 4px; padding: 5px 6px; }
-  .no { width: 14px; height: 16px; font-size: .58rem; }
+  .rank details > summary { grid-template-columns: 13px 1fr auto; gap: 4px; padding: 4px 6px; }
+  .no { width: 13px; height: 14px; font-size: .52rem; }
   .sub2 .risk { display: none; }
-  .name { font-size: .68rem; line-height: 1.3; white-space: normal; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; word-break: break-all; }
-  .bar { display: none; } .sub2 { font-size: .6rem; } .alloc { width: 26px; } .alloc b { font-size: .66rem; }
-  .detail { padding: 0 8px 8px; font-size: .7rem; }
+  .name { font-size: .58rem; line-height: 1.25; white-space: normal; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; word-break: break-all; }
+  .bar { display: none; } .sub2 { font-size: .52rem; } .alloc { width: 24px; } .alloc b { font-size: .58rem; }
+  .detail { padding: 0 6px 6px; font-size: .6rem; }
   .empty { padding: 12px 6px; font-size: .65rem; }
   h1 { font-size: 1.1rem; }
 }
