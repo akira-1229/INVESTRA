@@ -33,6 +33,11 @@ SCHEMA = """{
       "allocation": 20,
       "thesis": "推す理由（2文程度）"
     }
+  ],
+  "stocksSummary": "個別株ランキングの方針（1〜2文）。最後に「今週の変更: …」を一言",
+  "stocks": [
+    { 上の picks と同じ形式。ただし個別企業の株だけ（投資信託・ETF・債券・金は入れない）。
+      allocation は個別株に回す資金の中での配分（合計100） }
   ]
 }"""
 
@@ -40,13 +45,16 @@ SCHEMA = """{
 def build_prompt(today, previous, context):
     p = [
         f"今日は {today} です。あなたは日本在住の個人投資家（新NISA利用、長期目線）向けのアドバイザーです。",
-        "あなた自身の判断で、今おすすめする投資先を5〜7件選び、配分(%)を決めてください。",
-        "条件: allocation の合計は100、配分の大きい順に並べる。日本の証券会社で買えるものに限る。"
+        "あなた自身の判断で、(1) ポートフォリオ全体のおすすめ投資先（picks）を5〜7件、"
+        "(2) それとは別に、オルカンやS&P500などの長期インデックスとは別枠で買う『個別株』のランキング（stocks）を5〜7件、"
+        "それぞれ配分(%)を決めてください。個別株は日本株・米国株などの個別企業に限ります。",
+        "条件: picks と stocks それぞれで allocation の合計は100、配分の大きい順に並べる。日本の証券会社で買えるものに限る。"
         "確かでない数値（株価など）は書かない。",
     ]
     if previous and previous.get("picks"):
+        prev = {k: previous.get(k) for k in ("summary", "picks", "stocksSummary", "stocks") if previous.get(k)}
         p.append("参考: 先週のあなたの回答は以下です。理由がなければ無理に入れ替えなくて構いません。\n"
-                 + json.dumps({"summary": previous.get("summary"), "picks": previous["picks"]}, ensure_ascii=False))
+                 + json.dumps(prev, ensure_ascii=False))
     if context:
         p.append("参考: 今週の市場ニュース（事実のみ）:\n" + context)
     p.append("出力は次の形式のJSONだけにしてください（説明文やコードブロックは不要）:\n" + SCHEMA)
@@ -92,13 +100,12 @@ def ask(cfg, prompt):
     sys.exit(f"API の呼び出しに失敗しました: {last}")
 
 
-def parse(text):
-    text = text.strip()
-    if text.startswith("```"):
-        text = text.split("\n", 1)[1].rsplit("```", 1)[0]
-    d = json.loads(text)
-    picks = [p for p in d.get("picks", []) if isinstance(p, dict) and p.get("name")]
-    if not 3 <= len(picks) <= 10:
+FUND_WORDS = ("投資信託", "ETF", "インデックス", "債券", "国債", "REIT", "上場投信", "ファンド", "ゴールド")
+
+
+def normalize(items, min_n=3):
+    picks = [p for p in (items or []) if isinstance(p, dict) and p.get("name")]
+    if not min_n <= len(picks) <= 10:
         raise ValueError(f"銘柄数がおかしい: {len(picks)}")
     for p in picks:
         if p.get("risk") not in ("低", "中", "高"):
@@ -115,7 +122,21 @@ def parse(text):
         picks[0]["allocation"] += 100 - sum(p["allocation"] for p in picks)
     picks.sort(key=lambda p: -p["allocation"])
     keys = ["name", "short", "ticker", "type", "horizon", "risk", "allocation", "thesis"]
-    return str(d.get("summary", "")).strip(), [{k: p[k] for k in keys if p.get(k) not in (None, "")} for p in picks]
+    return [{k: p[k] for k in keys if p.get(k) not in (None, "")} for p in picks]
+
+
+def parse(text):
+    text = text.strip()
+    if text.startswith("```"):
+        text = text.split("\n", 1)[1].rsplit("```", 1)[0]
+    d = json.loads(text)
+    picks = normalize(d.get("picks"))
+    # 個別株: 投信・ETFなどが紛れていたら外す
+    raw = [x for x in (d.get("stocks") or []) if isinstance(x, dict)
+           and not any(w in str(x.get("type", "")) for w in FUND_WORDS)]
+    stocks = normalize(raw) if raw else []
+    return (str(d.get("summary", "")).strip(), picks,
+            str(d.get("stocksSummary", "")).strip(), stocks)
 
 
 def main():
@@ -132,7 +153,7 @@ def main():
     for _ in range(len(cfg["models"])):
         model, text = ask(cfg, prompt)
         try:
-            summary, picks = parse(text)
+            summary, picks, stocks_summary, stocks = parse(text)
             break
         except (ValueError, KeyError, TypeError) as e:  # JSONが壊れていたらそのモデルを外して再挑戦
             print(f"parse failed with {model}: {e}; text={text[:200]!r}", file=sys.stderr)
@@ -142,11 +163,13 @@ def main():
     else:
         sys.exit("どのモデルの回答も読み取れませんでした")
     out = {"updatedAt": today, "model": model, "summary": summary, "picks": picks}
+    if stocks:
+        out.update({"stocksUpdatedAt": today, "stocksSummary": stocks_summary, "stocks": stocks})
     s = json.dumps(out, ensure_ascii=False, indent=2) + "\n"
     if a.dry_run:
         print(s)
     else:
-        out_path.write_text(s); print(f"updated {out_path} with {model}: {len(picks)} picks")
+        out_path.write_text(s); print(f"updated {out_path} with {model}: {len(picks)} picks, {len(stocks)} stocks")
 
 
 if __name__ == "__main__":

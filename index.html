@@ -11,7 +11,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;800&family=JetBrains+Mono:wght@400;600;700&display=swap">
-<link rel="stylesheet" href="style.css?v=202611160521">
+<link rel="stylesheet" href="style.css?v=202611160529">
 </head>
 <body>
 <header>
@@ -30,13 +30,19 @@
 
 <main>
   <div class="zone">
-    <div class="zone-label">AI RANKINGS <small>4つのAIのおすすめ</small></div>
+    <div class="zone-head">
+      <div class="zone-label">AI RANKINGS <small>4つのAIのおすすめ</small></div>
+      <div class="seg" role="group" aria-label="表示する範囲">
+        <button type="button" data-mode="stocks" aria-pressed="true">個別株</button>
+        <button type="button" data-mode="all" aria-pressed="false">全体</button>
+      </div>
+    </div>
     <div id="advisors" class="board"></div>
   </div>
 
   <div class="zone">
     <section class="panel">
-      <h2>CONSENSUS <small>複数のAIが推した銘柄</small></h2>
+      <h2>CONSENSUS <small id="consensus-sub">複数のAIが推した個別株</small></h2>
       <div id="consensus"></div>
     </section>
   </div>
@@ -52,6 +58,6 @@
 <div id="zoom" class="zoom" hidden></div>
 
 <footer>カードや「最終的な投資先」をタップすると、画面の約80%に拡大して表示します（詳細は拡大画面のランキングの下）。AIの推奨は情報であり、投資助言ではありません。</footer>
-<script src="app.js?v=202611160521"></script>
+<script src="app.js?v=202611160529"></script>
 </body>
 </html>

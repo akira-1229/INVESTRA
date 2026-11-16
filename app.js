@@ -114,7 +114,7 @@ function openZoomDecision() {
   const d = lastDecision;
   if (!d?.picks?.length) return;
   showZoom(
-    zoomHTML({ label: "FINAL DECISION", color: "#00e5e6" }, { updatedAt: d.decidedAt, summary: d.memo, picks: d.picks }, lastVotes),
+    zoomHTML({ label: "FINAL DECISION", color: "#00e5e6" }, { updatedAt: d.decidedAt, summary: d.memo, picks: d.picks }, lastFullVotes),
     document.getElementById("decision").closest("section.panel"));
 }
 function closeZoom() {
@@ -163,15 +163,39 @@ function decisionHTML(d, votes) {
     <p class="tap-hint">パネルをタップすると拡大表示します</p>`;
 }
 
-async function render() {
-  const results = await Promise.all(ADVISORS.map(async (a) => ({ a, data: await load(`data/${a.id}.json`) })));
+// 表示モード: "stocks" = 個別株ランキング（オルカン等の長期インデックスを除く）、"all" = ポートフォリオ全体
+let mode = "stocks";
+try { mode = localStorage.getItem("investra-mode") || "stocks"; } catch {}
+const view = (d) => d && (mode === "stocks"
+  ? { updatedAt: d.stocks?.length ? (d.stocksUpdatedAt || d.updatedAt) : null, summary: d.stocksSummary, picks: d.stocks }
+  : d);
+let lastRaw = [], lastFullVotes = new Map();
+
+function setMode(m) {
+  mode = m;
+  try { localStorage.setItem("investra-mode", m); } catch {}
+  document.querySelectorAll(".seg button").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.mode === m)));
+  document.getElementById("consensus-sub").textContent = m === "stocks" ? "複数のAIが推した個別株" : "複数のAIが推した銘柄（全体）";
+}
+document.querySelectorAll(".seg button").forEach((b) => b.onclick = () => { setMode(b.dataset.mode); paint(); });
+
+// 読み込み済みのデータで画面を描き直す（モード切り替え時はこれだけ）
+function paint() {
+  const results = lastRaw.map(({ a, data }) => ({ a, data: view(data) }));
   const tally = collectVotes(results);
   lastResults = results; lastVotes = tally.votes;
   document.getElementById("advisors").innerHTML = results.map(({ a, data }, i) => advisorCard(a, data, tally.votes, i)).join("");
   document.getElementById("consensus").innerHTML = consensusHTML(tally) +
     `<div class="legend"><span><i class="risk 低"></i>リスク低</span><span><i class="risk 中"></i>中</span><span><i class="risk 高"></i>高</span><span><b class="match">×2</b> 他のAIと重複</span></div>`;
+}
+
+async function render() {
+  lastRaw = await Promise.all(ADVISORS.map(async (a) => ({ a, data: await load(`data/${a.id}.json`) })));
+  lastFullVotes = collectVotes(lastRaw).votes;  // 最終決定はポートフォリオ全体なので全体の重なりで数える
+  setMode(mode);
+  paint();
   lastDecision = await load("data/decision.json");
-  document.getElementById("decision").innerHTML = decisionHTML(lastDecision, tally.votes);
+  document.getElementById("decision").innerHTML = decisionHTML(lastDecision, lastFullVotes);
   const panel = document.getElementById("decision").closest("section.panel");
   if (lastDecision?.picks?.length) {
     panel.classList.add("tappable"); panel.setAttribute("role", "button"); panel.setAttribute("tabindex", "0");
