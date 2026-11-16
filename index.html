@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>INVESTRA</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header>
+  <h1>INVESTRA</h1>
+  <p class="sub">4つのAIのおすすめ投資先を並べて、最終判断は自分で。</p>
+</header>
+
+<main>
+  <section>
+    <h2>AI別のおすすめ</h2>
+    <div id="advisors" class="grid"></div>
+  </section>
+
+  <section>
+    <h2>重なり（複数のAIが推した銘柄）</h2>
+    <p class="note">ティッカー（なければ名前）が一致したものを集計しています。</p>
+    <div id="consensus"></div>
+  </section>
+
+  <section>
+    <h2>最終的な投資先（自分の判断）</h2>
+    <p class="note"><code>data/decision.json</code> を編集して記録します。</p>
+    <div id="decision"></div>
+  </section>
+</main>
+
+<footer>投資判断は自己責任で。AIの推奨は情報であり、助言ではありません。</footer>
+<script src="app.js"></script>
+</body>
+</html>
