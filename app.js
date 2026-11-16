@@ -80,7 +80,7 @@ function decisionHTML(d, votes) {
     <ol class="rank">${ranked(d.picks).map((p, i) => rowHTML(p, i, votes, "#00e5e6")).join("")}</ol>`;
 }
 
-(async () => {
+async function render() {
   const results = await Promise.all(ADVISORS.map(async (a) => ({ a, data: await load(`data/${a.id}.json`) })));
   const tally = collectVotes(results);
   document.getElementById("advisors").innerHTML = results.map(({ a, data }) => advisorCard(a, data, tally.votes)).join("");
@@ -88,4 +88,15 @@ function decisionHTML(d, votes) {
     `<div class="legend"><span><i class="risk 低"></i>リスク低</span><span><i class="risk 中"></i>中</span><span><i class="risk 高"></i>高</span><span><b class="match">×2</b> 他のAIと重複</span></div>`;
   document.getElementById("decision").innerHTML = decisionHTML(await load("data/decision.json"), tally.votes);
   document.querySelectorAll(".card .summary").forEach((el) => el.onclick = () => el.classList.toggle("open"));
-})();
+}
+
+// 右上の更新ボタン：ページを再読み込みせずに最新のJSONを取り直す
+const btn = document.getElementById("refresh");
+btn.onclick = async () => {
+  if (btn.classList.contains("busy")) return;
+  btn.classList.add("busy");
+  await Promise.all([render(), new Promise((r) => setTimeout(r, 700))]);
+  btn.classList.remove("busy");
+};
+
+render();
