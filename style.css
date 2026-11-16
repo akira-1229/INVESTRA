@@ -37,7 +37,7 @@ h1 { margin: 0; font-family: var(--disp); font-weight: 800; font-size: 1.35rem; 
 footer { color: var(--muted); font-family: var(--mono); font-size: .68rem; padding: 18px 16px; letter-spacing: .04em; }
 
 /* 4枚のAIカード */
-.board { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; }
+.board { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 12px; }
 .card { position: relative; background: var(--card); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
         border: 1px solid var(--line); display: flex; flex-direction: column;
         clip-path: polygon(0 0, calc(100% - 14px) 0, 100% 14px, 100% 100%, 14px 100%, 0 calc(100% - 14px));
@@ -81,8 +81,8 @@ ol.rank { list-style: none; margin: 0; padding: 0 0 8px; }
 .risk.低 { background: var(--low); box-shadow: 0 0 6px var(--low); }
 .risk.中 { background: var(--mid); box-shadow: 0 0 6px var(--mid); }
 .risk.高 { background: var(--high); box-shadow: 0 0 6px var(--high); }
-.match { font-family: var(--mono); font-size: .62rem; font-weight: 700; color: #ff4fd8; border: 1px solid #ff4fd8;
-         padding: 0 4px; text-shadow: 0 0 6px #ff4fd8; }
+.match { font-family: var(--mono); font-size: .62rem; font-weight: 700; color: var(--accent); border: 1px solid var(--accent);
+         padding: 0 4px; text-shadow: 0 0 6px var(--accent); }
 .alloc { text-align: right; width: 54px; font-family: var(--mono); }
 .alloc b { font-size: .84rem; color: #eafcfd; }
 .bar { height: 3px; background: rgba(255,255,255,.06); margin-top: 3px; }
@@ -114,12 +114,31 @@ td b { font-family: var(--mono); color: var(--accent); }
 .legend { display: flex; flex-wrap: wrap; gap: 12px; color: var(--muted); font-family: var(--mono); font-size: .66rem; margin-top: 8px; }
 .legend span { display: inline-flex; align-items: center; gap: 4px; }
 
-@media (max-width: 1100px) { .board { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
-@media (max-width: 640px) {
-  .board { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; gap: 10px; margin: 0 -16px; padding: 0 16px 6px; }
-  .card { flex: 0 0 86%; scroll-snap-align: center; }
+/* 5枚を常に一度に表示（幅に応じて詰める） */
+@media (max-width: 1250px) {
+  .board { gap: 8px; }
+  .card-head { padding: 10px 10px 6px; } .card-head h3 { font-size: .82rem; letter-spacing: .08em; }
+  .rank details > summary { grid-template-columns: 20px 1fr auto; gap: 6px; padding: 6px 10px; }
+  .no { width: 20px; } .alloc { width: 40px; } .summary { margin: 6px 10px 4px; }
+  .sub2 span:not(.ticker):not(.match) { display: none; }
+  .detail { padding-left: 36px; }
+}
+@media (max-width: 900px) {
+  /* 2列＋5枚目は横いっぱい。スワイプせずに全部縦に並ぶ */
+  .board { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .board > .card:last-child:nth-child(odd) { grid-column: 1 / -1; }
   .lower { grid-template-columns: 1fr; }
-  h1 { font-size: 1.15rem; }
+}
+@media (max-width: 640px) {
+  header, main { padding: 0 10px; } header { padding-top: 12px; padding-bottom: 10px; }
+  .card-head { flex-direction: column; gap: 0; } .card-head h3 { font-size: .75rem; }
+  .summary { display: none; }
+  .rank details > summary { grid-template-columns: 16px 1fr auto; gap: 5px; padding: 5px 8px; }
+  .no { width: 16px; height: 18px; font-size: .62rem; }
+  .name { font-size: .72rem; } .sub2 { font-size: .6rem; } .alloc { width: 30px; } .alloc b { font-size: .72rem; }
+  .detail { padding: 0 8px 8px; font-size: .7rem; }
+  .empty { padding: 12px 6px; font-size: .65rem; }
+  h1 { font-size: 1.1rem; }
 }
 
 /* ===== 左上ロゴ：アイコンを立体化して時計回りに回転 ===== */

@@ -1,6 +1,6 @@
 # INVESTRA
 
-自分専用の投資判断ページ。ChatGPT・Claude・Gemini・Muse が定期的にそれぞれのおすすめ投資先を並べ、それを見比べて最終的な投資先を自分で決める。
+自分専用の投資判断ページ。ChatGPT・Claude・Gemini・Muse・Siri が定期的にそれぞれのおすすめ投資先を並べ、それを見比べて最終的な投資先を自分で決める。
 
 ## 表示の仕方
 
@@ -20,6 +20,7 @@ GitHub Pages（Settings → Pages → main ブランチのルート）でも公�
 | `data/claude.json` | Claude |
 | `data/gemini.json` | Gemini |
 | `data/muse.json` | Muse |
+| `data/siri.json` | Siri |
 | `data/decision.json` | 自分（最終判断） |
 
 各AIは自分のファイルだけを上書きします。ほかのAIのファイルには触れません。

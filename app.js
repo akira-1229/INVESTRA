@@ -4,6 +4,7 @@ const ADVISORS = [
   { id: "claude",  label: "Claude",  color: "#ff8a5c" },
   { id: "gemini",  label: "Gemini",  color: "#4da3ff" },
   { id: "muse",    label: "Muse",    color: "#c77dff" },
+  { id: "siri",    label: "Siri",    color: "#ff5fa2" },
 ];
 
 const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) =>
