@@ -69,7 +69,14 @@ def call(url, model, prompt, key):
     req = urllib.request.Request(url, json.dumps(payload).encode(),
                                  {"Authorization": f"Bearer {key}", "Content-Type": "application/json"})
     with urllib.request.urlopen(req, timeout=180) as r:
-        return json.load(r)["choices"][0]["message"]["content"]
+        raw = r.read().decode("utf-8", "replace")
+    try:
+        content = json.loads(raw)["choices"][0]["message"]["content"]
+    except (ValueError, KeyError, IndexError, TypeError):
+        raise ValueError(f"unexpected response: {raw[:300]!r}")
+    if not content or not content.strip():
+        raise ValueError(f"empty content: {raw[:300]!r}")
+    return content
 
 
 def ask(cfg, prompt):
@@ -84,8 +91,8 @@ def ask(cfg, prompt):
                 if e.code in (429, 500, 503):
                     time.sleep(20 * (attempt + 1)); continue
                 break  # 400/401/404 などは次のモデルへ
-            except (urllib.error.URLError, TimeoutError) as e:
-                last = f"{model}: {e}"; break  # 時間切れは次のモデルへ
+            except (urllib.error.URLError, TimeoutError, ValueError) as e:
+                last = f"{model}: {e}"; break  # 時間切れ・変な応答は次のモデルへ
         print("fallback:", last, file=sys.stderr)
     sys.exit(f"API の呼び出しに失敗しました: {last}")
 
@@ -126,8 +133,19 @@ def main():
     today = datetime.datetime.now(JST).date().isoformat()
     previous = json.loads(out_path.read_text()) if out_path.exists() else None
     context = Path(a.context).read_text().strip() if a.context and Path(a.context).exists() else ""
-    model, text = ask(cfg, build_prompt(today, previous, context))
-    summary, picks = parse(text)
+    prompt = build_prompt(today, previous, context)
+    for _ in range(len(cfg["models"])):
+        model, text = ask(cfg, prompt)
+        try:
+            summary, picks = parse(text)
+            break
+        except (ValueError, KeyError, TypeError) as e:  # JSONが壊れていたらそのモデルを外して再挑戦
+            print(f"parse failed with {model}: {e}; text={text[:200]!r}", file=sys.stderr)
+            cfg = {**cfg, "models": [m for m in cfg["models"] if m != model]}
+            if not cfg["models"]:
+                sys.exit("どのモデルの回答も読み取れませんでした")
+    else:
+        sys.exit("どのモデルの回答も読み取れませんでした")
     out = {"updatedAt": today, "model": model, "summary": summary, "picks": picks}
     s = json.dumps(out, ensure_ascii=False, indent=2) + "\n"
     if a.dry_run:
