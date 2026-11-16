@@ -2,8 +2,8 @@
 const ADVISORS = [
   { id: "claude",  label: "Claude",  color: "#ff8a5c" },
   // Gemini は虹色。color は光り方などに使う代表色、fill がゲージや文字に使う虹のグラデーション
-  { id: "gemini",  label: "Gemini",  color: "#9b8cff",
-    fill: "linear-gradient(90deg, #ff3b5c, #ff9f1a, #ffe600, #2bd96b, #1fb6ff, #6a5cff, #e040fb)" },
+  { id: "gemini",  label: "Gemini",  color: "#a9a6d8",
+    fill: "linear-gradient(90deg, #e8919f, #e9b48a, #e3d38f, #9dcfa9, #8ebfdf, #a3a6e3, #c9a3dc)" },
   { id: "muse",    label: "Muse",    color: "#2f5dff" },
   { id: "siri",    label: "Siri",    color: "#f2f5f8" },
 ];

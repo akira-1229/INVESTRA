@@ -451,3 +451,12 @@ header::after { left: 0 !important; right: 0; width: auto; height: 2pt; bottom: 
 .chips span.rainbow { border-image: var(--g) 1; color: #fff; background: rgba(155, 140, 255, .12); }
 /* Siri（白）の選択バッジは黒文字で */
 .zoom-card .sel { color: #000; }
+
+/* 虹色は控えめに（光り方を弱く） */
+.card.rainbow .card-head h3, .zoom-card.rainbow .card-head h3,
+.card.rainbow .rank .row .alloc b, .zoom-card.rainbow .zalloc { filter: none; }
+.card.rainbow .gauge i, .zoom-card.rainbow .zalloc .bar i { box-shadow: none; opacity: .9; }
+.card.rainbow::before, .zoom-card.rainbow::before { filter: none; }
+.card.rainbow .card-head { background: var(--g) border-box top / 100% 4px no-repeat, linear-gradient(90deg, rgba(169, 166, 216, .1), transparent 70%); }
+.zoom-card.rainbow { box-shadow: 0 0 40px rgba(169, 166, 216, .18); }
+.zoom-card.rainbow .sel { box-shadow: none; }
