@@ -480,5 +480,5 @@ header::after { left: 0 !important; right: 0; width: auto; height: 2pt; bottom: 
 .atext { display: inline-block; padding-left: 100%; animation: ticker var(--dur, 12s) linear infinite; will-change: transform; }
 @keyframes ticker { from { transform: translateX(0); } to { transform: translateX(-100%); } }
 .rank li:hover .atext, .rank li:active .atext { animation-play-state: paused; }
-.zrank .atrack { white-space: normal; -webkit-mask-image: none; mask-image: none; }
-.zrank .atext { display: inline; padding-left: 0; animation: none; }
+/* 拡大画面でも1行で流す */
+.zrank .alertline { overflow: hidden; }
