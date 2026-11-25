@@ -1,19 +1,33 @@
 {
-  "updatedAt": "2026-11-22 12:16",
+  "updatedAt": "2026-11-25 19:16",
   "alerts": [
+    {
+      "key": "NVDA",
+      "name": "エヌビディア",
+      "headline": "フアン氏がCEOに復帰、各種調査は継続",
+      "date": "2026-11-24",
+      "source": "FOXニュース"
+    },
+    {
+      "key": "MSFT",
+      "name": "マイクロソフト",
+      "headline": "大規模障害巡りカナダで集団訴訟を起こされる",
+      "date": "2026-11-24",
+      "source": "ニューズウィーク"
+    },
+    {
+      "key": "GOOGL",
+      "name": "アルファベット（Google）",
+      "headline": "傘下Waymoが自動運転車約4500台をリコール",
+      "date": "2026-11-24",
+      "source": "CNBC"
+    },
     {
       "key": "TSM",
       "name": "台湾積体電路製造（TSMC）",
       "headline": "米規制強化で中国顧客向けの一部出荷を停止",
       "date": "2026-11-20",
       "source": "フィスコ"
-    },
-    {
-      "key": "NVDA",
-      "name": "エヌビディア",
-      "headline": "SECが地域別売上の会計処理を調査と報道",
-      "date": "2026-11-20",
-      "source": "ロイター"
     },
     {
       "key": "8306",
